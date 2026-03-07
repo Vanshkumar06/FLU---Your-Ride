@@ -1,0 +1,33 @@
+/* Tailwind ke base styles import kar rahe hain */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* FLU ka custom CSS */
+@layer components {
+
+    /* Primary button - mustard yellow */
+    .btn-primary {
+        @apply bg-flu-yellow text-black font-semibold py-2 px-6 rounded-lg hover:opacity-90 transition-all duration-300;
+    }
+
+    /* Secondary button - white with border */
+    .btn-secondary {
+        @apply bg-white text-black font-semibold py-2 px-6 rounded-lg border border-gray-300 hover:bg-gray-50 transition-all duration-300;
+    }
+
+    /* Input field styling */
+    .input-field {
+        @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-flu-yellow transition-all duration-300;
+    }
+
+    /* Card styling */
+    .card {
+        @apply bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-all duration-300;
+    }
+
+    /* Navbar styling */
+    .navbar {
+        @apply bg-flu-yellow fixed top-0 left-0 right-0 z-50 px-6 py-4 flex items-center justify-between shadow-md;
+    }
+}

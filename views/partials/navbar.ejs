@@ -1,0 +1,62 @@
+<!-- Navbar - har page pe show hoga, fixed top par rahega -->
+<nav class="navbar">
+
+    <!-- FLU Logo -->
+    <div class="flex items-center">
+        <a href="/" class="text-black text-2xl font-bold tracking-tight">
+            FLU <span class="text-white text-sm font-normal">Your Ride</span>
+        </a>
+    </div>
+
+    <!-- Desktop Navigation Links -->
+    <div class="hidden md:flex items-center space-x-8">
+        <a href="/rides/search" class="text-black font-medium hover:opacity-70 transition-all">
+            <i class="fa fa-search mr-1"></i> Find Ride
+        </a>
+        <a href="/rides/publish" class="text-black font-medium hover:opacity-70 transition-all">
+            <i class="fa fa-plus mr-1"></i> Publish Ride
+        </a>
+        <a href="/history" class="text-black font-medium hover:opacity-70 transition-all">
+            <i class="fa fa-history mr-1"></i> My Rides
+        </a>
+        <a href="/wallet" class="text-black font-medium hover:opacity-70 transition-all">
+            <i class="fa fa-wallet mr-1"></i> FLU Wallet
+        </a>
+    </div>
+
+    <!-- Login/Signup Buttons - logged out state -->
+    <div class="flex items-center space-x-3" id="auth-buttons">
+        <button onclick="openLoginModal()" class="btn-secondary text-sm">
+            Login
+        </button>
+        <button onclick="openSignupModal()" class="btn-primary text-sm">
+            Sign Up
+        </button>
+    </div>
+
+    <!-- User Profile - logged in state, pehle hidden rahega -->
+    <div class="hidden items-center space-x-3" id="user-profile">
+        <span class="text-black font-medium" id="user-name"></span>
+        <button onclick="logout()" class="btn-secondary text-sm">
+            Logout
+        </button>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <div class="md:hidden">
+        <button onclick="toggleMobileMenu()" class="text-black text-xl">
+            <i class="fa fa-bars"></i>
+        </button>
+    </div>
+
+</nav>
+
+<!-- Mobile Menu - mobile par show hoga -->
+<div class="hidden fixed top-16 left-0 right-0 bg-flu-yellow z-40 px-6 py-4 shadow-lg" id="mobile-menu">
+    <div class="flex flex-col space-y-4">
+        <a href="/rides/search" class="text-black font-medium">Find Ride</a>
+        <a href="/rides/publish" class="text-black font-medium">Publish Ride</a>
+        <a href="/history" class="text-black font-medium">My Rides</a>
+        <a href="/wallet" class="text-black font-medium">FLU Wallet</a>
+    </div>
+</div>

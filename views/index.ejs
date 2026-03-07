@@ -1,0 +1,2246 @@
+<%- include('partials/header') %>
+
+  <!--
+=============================================================
+  FLU — Your Ride | Ultra Premium Homepage
+  Theme   : Midnight Black + Electric Lime (#C8F135)
+  Fonts   : Clash Display (headings) + Satoshi (body)
+  Features: Pill navbar · Text scramble · Grain overlay
+            Magnetic buttons · Marquee · Scroll reveal
+            Moving road · Glassmorphism cards
+=============================================================
+-->
+
+  <style>
+    /* ===================== FONTS ===================== */
+    @import url('https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@300,400,500,700&display=swap');
+
+    /* ===================== VARIABLES ===================== */
+    :root {
+      --lime: #C8F135;
+      --lime-dim: #a8cc20;
+      --white: #ffffff;
+      --off-white: #e8e8e8;
+      --grey: #888888;
+      --dark-grey: #1c1c1c;
+      --black: #080808;
+      --card: #101010;
+      --border: #1e1e1e;
+      --glass: rgba(255, 255, 255, 0.04);
+    }
+
+    /* ===================== RESET ===================== */
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Satoshi', sans-serif;
+      overflow-x: hidden;
+      /* cursor: default — normal browser cursor */
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    button {
+      font-family: 'Satoshi', sans-serif;
+    }
+
+    /* ===================== GRAIN OVERLAY ===================== */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.025;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ===================== FLOATING PILL NAVBAR ===================== */
+    .flu-navbar {
+      position: fixed;
+      top: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      width: calc(100% - 4rem);
+      max-width: 1100px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(10, 10, 10, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 0.7rem 0.7rem 0.7rem 1.8rem;
+      transition: all 0.4s ease;
+    }
+
+    .flu-navbar.nav-hidden {
+      transform: translateX(-50%) translateY(-120%);
+    }
+
+    /* Logo */
+    .nav-logo {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--lime);
+      white-space: nowrap;
+    }
+
+    .nav-logo sub {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 0.6rem;
+      color: var(--grey);
+      letter-spacing: 2px;
+      font-weight: 400;
+      margin-left: 4px;
+      vertical-align: middle;
+    }
+
+    /* Center links */
+    .nav-center {
+      display: flex;
+      gap: 0.2rem;
+      align-items: center;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .nav-center a {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--grey);
+      letter-spacing: 0.5px;
+      padding: 0.45rem 1rem;
+      border-radius: 100px;
+      transition: color 0.25s, background 0.25s;
+    }
+
+    .nav-center a:hover {
+      color: var(--white);
+      background: var(--dark-grey);
+    }
+
+    .nav-center a.active {
+      color: var(--black);
+      background: var(--lime);
+    }
+
+    /* Right actions */
+    .nav-right {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+    }
+
+    .nav-btn-ghost {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--grey);
+      background: transparent;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 100px;
+      transition: color 0.25s;
+    }
+
+    .nav-btn-ghost:hover {
+      color: var(--white);
+    }
+
+    .nav-btn-lime {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--black);
+      background: var(--lime);
+      border: none;
+      padding: 0.55rem 1.3rem;
+      border-radius: 100px;
+      transition: opacity 0.25s, transform 0.2s;
+    }
+
+    .nav-btn-lime:hover {
+      opacity: 0.85;
+      transform: scale(0.98);
+    }
+
+    /* Logged-in user chip */
+    .nav-user-chip {
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--dark-grey);
+      border-radius: 100px;
+      padding: 0.35rem 1rem 0.35rem 0.5rem;
+    }
+
+    .nav-user-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--lime);
+      color: var(--black);
+      font-size: 0.72rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-user-name {
+      font-size: 0.8rem;
+      color: var(--off-white);
+      font-weight: 500;
+    }
+
+    /* ===================== HERO ===================== */
+    .hero {
+      min-height: 100vh;
+      padding: 0 4rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Background radial glow */
+    .hero-glow {
+      position: absolute;
+      top: -10%;
+      left: 30%;
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(200, 241, 53, 0.05) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-glow-2 {
+      position: absolute;
+      bottom: -20%;
+      right: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(200, 241, 53, 0.03) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Speed lines in background */
+    .hero-lines {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .hero-lines span {
+      position: absolute;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(200, 241, 53, 0.08), transparent);
+      animation: speedLine 3s linear infinite;
+      opacity: 0;
+    }
+
+    .hero-lines span:nth-child(1) {
+      top: 25%;
+      width: 40%;
+      animation-delay: 0s;
+    }
+
+    .hero-lines span:nth-child(2) {
+      top: 45%;
+      width: 60%;
+      animation-delay: 0.8s;
+    }
+
+    .hero-lines span:nth-child(3) {
+      top: 65%;
+      width: 30%;
+      animation-delay: 1.6s;
+    }
+
+    .hero-lines span:nth-child(4) {
+      top: 75%;
+      width: 50%;
+      animation-delay: 2.2s;
+    }
+
+    @keyframes speedLine {
+      0% {
+        left: -60%;
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 1;
+      }
+
+      90% {
+        opacity: 0.6;
+      }
+
+      100% {
+        left: 110%;
+        opacity: 0;
+      }
+    }
+
+    /* Pill badge */
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      padding: 0.35rem 1rem 0.35rem 0.5rem;
+      border-radius: 100px;
+      width: fit-content;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .hero-badge.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .badge-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(200, 241, 53, 0.12);
+      border: 1px solid rgba(200, 241, 53, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .badge-dot::after {
+      content: '';
+      width: 7px;
+      height: 7px;
+      background: var(--lime);
+      border-radius: 50%;
+      animation: pulse 1.8s ease infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      50% {
+        transform: scale(1.4);
+        opacity: 0.5;
+      }
+    }
+
+    .badge-text {
+      font-size: 0.78rem;
+      color: var(--grey);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    /* Main heading */
+    .hero-h1 {
+      font-family: 'Clash Display', sans-serif;
+      font-size: clamp(4.5rem, 11vw, 10.5rem);
+      font-weight: 700;
+      line-height: 0.88;
+      letter-spacing: -1px;
+      overflow: hidden;
+    }
+
+    .hero-h1 .word {
+      display: inline-block;
+      overflow: hidden;
+      margin-right: 0.15em;
+    }
+
+    .hero-h1 .word span {
+      display: inline-block;
+      transform: translateY(110%);
+      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .hero-h1 .accent {
+      color: var(--lime);
+    }
+
+    /* Subheading */
+    .hero-desc {
+      max-width: 500px;
+      color: var(--grey);
+      font-size: 1rem;
+      line-height: 1.8;
+      margin-top: 2.5rem;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.6s ease 0.9s, transform 0.6s ease 0.9s;
+    }
+
+    .hero-desc.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Hero CTA */
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-top: 2.5rem;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.6s ease 1.1s, transform 0.6s ease 1.1s;
+    }
+
+    .hero-cta.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Magnetic CTA button */
+    .btn-magnetic {
+      position: relative;
+      overflow: hidden;
+      background: var(--lime);
+      color: var(--black);
+      padding: 1rem 2.8rem;
+      border-radius: 100px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      border: none;
+      letter-spacing: 0.5px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 0 0 rgba(200, 241, 53, 0);
+    }
+
+    .btn-magnetic:hover {
+      box-shadow: 0 8px 40px rgba(200, 241, 53, 0.25);
+    }
+
+    .btn-magnetic .btn-text {
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-magnetic::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--lime-dim);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .btn-magnetic:hover::after {
+      opacity: 1;
+    }
+
+    .btn-ghost-pill {
+      background: black;
+      border: 1px solid var(--border);
+      color: var(--off-white);
+      padding: 1rem 2.8rem;
+      border-radius: 100px;
+      font-size: 0.92rem;
+      font-weight: 500;
+      transition: border-color 0.3s, color 0.3s;
+    }
+
+    .btn-ghost-pill:hover {
+      border-color: var(--grey);
+      color: var(--white);
+    }
+
+    /* Scroll hint */
+    .scroll-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      opacity: 0;
+      transition: opacity 0.6s ease 1.5s;
+    }
+
+    .scroll-hint.visible {
+      opacity: 1;
+    }
+
+    .scroll-line {
+      width: 32px;
+      height: 1px;
+      background: var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scroll-line::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: var(--lime);
+      animation: scrollAnim 2s ease infinite;
+    }
+
+    @keyframes scrollAnim {
+      0% {
+        left: -100%
+      }
+
+      100% {
+        left: 100%
+      }
+    }
+
+    .scroll-text {
+      font-size: 0.72rem;
+      color: var(--grey);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* ===================== ROAD ANIMATION ===================== */
+    .road-section {
+      height: 80px;
+      background: #0a0a0a;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .road-dashes {
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(90deg,
+          transparent 0px,
+          transparent 60px,
+          rgba(200, 241, 53, 0.06) 60px,
+          rgba(200, 241, 53, 0.06) 120px);
+      animation: roadMove 1.5s linear infinite;
+    }
+
+    @keyframes roadMove {
+      from {
+        background-position: 0 0
+      }
+
+      to {
+        background-position: -120px 0
+      }
+    }
+
+    @keyframes carDrive {
+      from {
+        left: -120px
+      }
+
+      to {
+        left: 105%
+      }
+    }
+
+    .road-car {
+      position: absolute;
+      bottom: 18px;
+      font-size: 2.2rem;
+      filter: drop-shadow(0 4px 14px rgba(200, 241, 53, 0.4));
+      animation: carDrive 9s linear infinite 0s;
+    }
+
+    .road-car-2 {
+      position: absolute;
+      bottom: 18px;
+      font-size: 2.2rem;
+      filter: drop-shadow(0 4px 14px rgba(200, 241, 53, 0.4));
+      animation: carDrive 9s linear infinite -1.5s;
+    }
+
+    .road-car-3 {
+      position: absolute;
+      bottom: 18px;
+      font-size: 2.2rem;
+      filter: drop-shadow(0 4px 14px rgba(200, 241, 53, 0.4));
+      animation: carDrive 9s linear infinite -3s;
+    }
+
+    .road-car-4 {
+      position: absolute;
+      bottom: 18px;
+      font-size: 2.2rem;
+      filter: drop-shadow(0 4px 14px rgba(200, 241, 53, 0.4));
+      animation: carDrive 9s linear infinite -4.5s;
+    }
+
+    .road-car-5 {
+      position: absolute;
+      bottom: 18px;
+      font-size: 2.2rem;
+      filter: drop-shadow(0 4px 14px rgba(200, 241, 53, 0.4));
+      animation: carDrive 9s linear infinite -6s;
+    }
+
+    .road-car-6 {
+      position: absolute;
+      bottom: 18px;
+      font-size: 2.2rem;
+      filter: drop-shadow(0 4px 14px rgba(200, 241, 53, 0.4));
+      animation: carDrive 9s linear infinite -7.5s;
+    }
+
+    /* ===================== SECTION COMMONS ===================== */
+    .section-tag {
+      font-family: 'Satoshi', monospace;
+      font-size: 0.72rem;
+      color: var(--lime);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 500;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+
+    /* ── City Autocomplete ── */
+    .sf-wrap {
+      position: relative;
+    }
+
+    .ac-dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      z-index: 9000;
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 14px;
+      max-height: 230px;
+      overflow-y: auto;
+      display: none;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+    }
+
+    .ac-dropdown.open {
+      display: block;
+    }
+
+    .ac-dropdown::-webkit-scrollbar {
+      width: 3px;
+    }
+
+    .ac-dropdown::-webkit-scrollbar-thumb {
+      background: #2a2a2a;
+      border-radius: 3px;
+    }
+
+    .ac-item {
+      padding: 0.7rem 1rem;
+      font-size: 0.85rem;
+      color: #888;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      transition: background 0.12s, color 0.12s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ac-item:last-child {
+      border-bottom: none;
+    }
+
+    .ac-item:hover,
+    .ac-item.ac-selected {
+      background: #1a1a1a;
+      color: #fff;
+    }
+
+    .ac-item b {
+      color: #C8F135;
+      font-weight: 600;
+    }
+
+
+    .section-tag::before {
+      content: '';
+      width: 20px;
+      height: 1px;
+      background: var(--lime);
+    }
+
+    .section-heading {
+      font-family: 'Clash Display', sans-serif;
+      font-size: clamp(2.8rem, 5vw, 5rem);
+      font-weight: 700;
+      line-height: 0.95;
+      letter-spacing: -0.5px;
+    }
+
+    .section-heading .accent {
+      color: var(--lime);
+    }
+
+    /* Reveal animation */
+    .reveal {
+      opacity: 0;
+      transform: translateY(36px);
+      transition: opacity 0.75s ease, transform 0.75s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 {
+      transition-delay: 0.1s;
+    }
+
+    .reveal-delay-2 {
+      transition-delay: 0.2s;
+    }
+
+    .reveal-delay-3 {
+      transition-delay: 0.3s;
+    }
+
+    /* ===================== MARQUEE STRIP ===================== */
+    .marquee-wrap {
+      background: var(--lime);
+      padding: 0.9rem 0;
+      overflow: hidden;
+      border-top: 1px solid rgba(0, 0, 0, 0.15);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+    }
+
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      animation: marquee 20s linear infinite;
+    }
+
+    .marquee-item {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--black);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding-right: 1.5rem;
+    }
+
+    .marquee-sep {
+      font-size: 0.5rem;
+      opacity: 0.4;
+    }
+
+    @keyframes marquee {
+      from {
+        transform: translateX(0)
+      }
+
+      to {
+        transform: translateX(-50%)
+      }
+    }
+
+    /* ===================== SEARCH SECTION ===================== */
+    .search-section {
+      background: white;
+      padding: 8rem 4rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+
+    .search-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 2.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .search-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--lime), transparent);
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .s-label {
+      font-size: 0.7rem;
+      color: var(--grey);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    .s-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      color: var(--white);
+      padding: 0.9rem 1rem;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-family: 'Satoshi', sans-serif;
+      outline: none;
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    .s-input::placeholder {
+      color: white;
+    }
+
+    .s-input:focus {
+      border-color: var(--lime);
+      background: rgba(200, 241, 53, 0.03);
+    }
+
+    .s-search-btn {
+      width: 100%;
+      margin-top: 0.5rem;
+      background: var(--lime);
+      color: var(--black);
+      border: none;
+      padding: 1rem;
+      border-radius: 12px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      font-family: 'Clash Display', sans-serif;
+      letter-spacing: 1px;
+      transition: opacity 0.3s, transform 0.2s;
+    }
+
+    .s-search-btn:hover {
+      opacity: 0.88;
+      transform: translateY(-1px);
+    }
+
+    /* ===================== HOW IT WORKS ===================== */
+    .how-section {
+      padding: 8rem 4rem;
+      background: #090909;
+      border-top: 1px solid var(--border);
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 5rem;
+    }
+
+    .step-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.4s, transform 0.3s;
+    }
+
+    .step-card:hover {
+      border-color: rgba(200, 241, 53, 0.3);
+      transform: translateY(-4px);
+    }
+
+    .step-card::after {
+      content: '';
+      position: absolute;
+      bottom: -60px;
+      right: -60px;
+      width: 150px;
+      height: 150px;
+      background: radial-gradient(circle, rgba(200, 241, 53, 0.06), transparent 70%);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .step-card:hover::after {
+      opacity: 1;
+    }
+
+    .step-num {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 5.5rem;
+      font-weight: 700;
+      color: #95CFB0;
+      position: absolute;
+      top: 0.5rem;
+      right: 1rem;
+      line-height: 1;
+      pointer-events: none;
+      transition: color 0.4s;
+    }
+
+    .step-card:hover .step-num {
+      color: rgba(200, 241, 53, 0.05);
+    }
+
+    .step-icon-wrap {
+      width: 48px;
+      height: 48px;
+      background: rgba(200, 241, 53, 0.08);
+      border: 1px solid rgba(200, 241, 53, 0.15);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 2rem;
+    }
+
+    .step-title {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+    }
+
+    .step-desc {
+      color: var(--grey);
+      font-size: 0.88rem;
+      line-height: 1.75;
+    }
+
+    /* ===================== WALLET SECTION ===================== */
+    .wallet-section {
+      background-color: white;
+      padding: 8rem 4rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+      border-top: 1px solid var(--border);
+    }
+
+    .wallet-ui {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 2.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .wallet-ui::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--lime), transparent);
+    }
+
+    .w-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(200, 241, 53, 0.08);
+      border: 1px solid rgba(200, 241, 53, 0.15);
+      padding: 0.3rem 0.8rem;
+      border-radius: 100px;
+      font-size: 0.72rem;
+      color: var(--lime);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    .w-balance {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: var(--lime);
+      line-height: 1;
+      margin-bottom: 0.3rem;
+      letter-spacing: -1px;
+    }
+
+    .w-balance-label {
+      font-size: 0.82rem;
+      color: var(--grey);
+      margin-bottom: 2rem;
+    }
+
+    .w-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.5rem 0;
+    }
+
+    .w-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.9rem;
+    }
+
+    .w-row-k {
+      font-size: 0.82rem;
+      color: var(--grey);
+    }
+
+    .w-row-v {
+      font-size: 0.88rem;
+      color: var(--off-white);
+      font-weight: 500;
+    }
+
+    .w-row-v.lime {
+      color: var(--lime);
+    }
+
+    .w-redeem-btn {
+      width: 100%;
+      margin-top: 1.5rem;
+      background: transparent;
+      border: 1px solid rgba(200, 241, 53, 0.3);
+      color: var(--lime);
+      padding: 0.9rem;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      font-family: 'Satoshi', sans-serif;
+      letter-spacing: 0.5px;
+      transition: background 0.3s, color 0.3s, border-color 0.3s;
+    }
+
+    .w-redeem-btn:hover {
+      background: var(--lime);
+      color: var(--black);
+      border-color: var(--lime);
+    }
+
+    /* ===================== TESTIMONIALS ===================== */
+    .testimonials-section {
+      padding: 8rem 4rem;
+      background: #090909;
+      border-top: 1px solid var(--border);
+    }
+
+    .t-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 5rem;
+    }
+
+    .t-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+
+    .t-card:hover {
+      border-color: #2a2a2a;
+      transform: translateY(-3px);
+    }
+
+    .t-rating {
+      color: var(--lime);
+      font-size: 0.85rem;
+      letter-spacing: 3px;
+      margin-bottom: 1.2rem;
+    }
+
+    .t-quote {
+      color: white;
+      font-size: 0.88rem;
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+    }
+
+    .t-author {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .t-av {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-family: 'Clash Display', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .t-name {
+      color: #95CFB0;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    .t-location {
+      font-size: 0.75rem;
+      color: var(--grey);
+    }
+
+    /* ===================== CTA SECTION ===================== */
+    .cta-section {
+      background-color: white;
+      padding: 9rem 4rem;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 700px;
+      height: 400px;
+      background: radial-gradient(ellipse, rgba(200, 241, 53, 0.05) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .cta-h2 {
+      font-family: 'Clash Display', sans-serif;
+      font-size: clamp(3.5rem, 8vw, 7.5rem);
+      font-weight: 700;
+      line-height: 0.92;
+      letter-spacing: -1px;
+      margin-bottom: 1.5rem;
+    }
+
+    .cta-h2 .accent {
+      color: var(--lime);
+    }
+
+    .cta-desc {
+      color: var(--grey);
+      font-size: 1rem;
+      max-width: 440px;
+      margin: 0 auto 3rem;
+      line-height: 1.7;
+    }
+
+    .cta-btns {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ===================== FOOTER ===================== */
+    .flu-footer {
+      background: #050505;
+      border-top: 1px solid var(--border);
+      padding: 5rem 4rem 2rem;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 4rem;
+      margin-bottom: 4rem;
+    }
+
+    .footer-brand-name {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: var(--lime);
+      margin-bottom: 1rem;
+    }
+
+    .footer-desc {
+      color: white;
+      font-size: 0.85rem;
+      line-height: 1.8;
+      max-width: 240px;
+    }
+
+    .footer-col-title {
+      font-size: 0.68rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: white;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .footer-links a {
+      color: #8f8f8f;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--white);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid #111;
+      padding-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-copy {
+      color: white;
+      font-size: 0.78rem;
+    }
+
+    .footer-version {
+      font-size: 0.72rem;
+      color: #222;
+      font-family: 'Satoshi', monospace;
+      letter-spacing: 1px;
+    }
+
+    /* ===================== MODAL ===================== */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(12px);
+      z-index: 5000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 400px;
+      margin: 1rem;
+      position: relative;
+      animation: panelIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes panelIn {
+      from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.97)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1)
+      }
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 1.2rem;
+      right: 1.2rem;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #1a1a1a;
+      border: 1px solid var(--border);
+      color: var(--grey);
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .modal-close-btn:hover {
+      color: var(--white);
+    }
+
+    .modal-title {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 1.9rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 0.3rem;
+      color: var(--white);
+    }
+
+    .modal-sub {
+      color: var(--grey);
+      font-size: 0.82rem;
+      margin-bottom: 2rem;
+    }
+
+    .modal-err {
+      background: rgba(255, 60, 50, 0.08);
+      border: 1px solid rgba(255, 60, 50, 0.2);
+      color: #ff4040;
+      font-size: 0.8rem;
+      padding: 0.6rem 0.9rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    .m-group {
+      margin-bottom: 1rem;
+    }
+
+    .m-label {
+      font-size: 0.68rem;
+      color: var(--grey);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .m-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      color: var(--white);
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-family: 'Satoshi', sans-serif;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .m-input::placeholder {
+      color: #3a3a3a;
+    }
+
+    .m-input:focus {
+      border-color: var(--lime);
+    }
+
+    .m-submit {
+      width: 100%;
+      background: var(--lime);
+      color: var(--black);
+      border: none;
+      padding: 0.95rem;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      font-family: 'Clash Display', sans-serif;
+      letter-spacing: 1px;
+      margin-top: 0.5rem;
+      margin-bottom: 1.2rem;
+      transition: opacity 0.3s;
+    }
+
+    .m-submit:hover {
+      opacity: 0.88;
+    }
+
+    .m-divider {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin: 1.2rem 0;
+      color: #444;
+      font-size: 0.75rem;
+    }
+
+    .m-divider::before,
+    .m-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .m-google {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--off-white);
+      padding: 0.85rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-family: 'Satoshi', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      transition: border-color 0.3s;
+    }
+
+    .m-google:hover {
+      border-color: #333;
+    }
+
+    .m-switch {
+      text-align: center;
+      color: white;
+      font-size: 0.82rem;
+      margin-top: 1.2rem;
+    }
+
+    .m-switch a {
+      color: var(--lime);
+    }
+
+    /* ===================== RESPONSIVE ===================== */
+    @media (max-width: 960px) {
+      .flu-navbar {
+        width: calc(100% - 2rem);
+        padding: 0.7rem 0.7rem 0.7rem 1.4rem;
+      }
+
+      .nav-center {
+        display: none;
+      }
+
+      .hero {
+        padding: 0 2rem;
+      }
+
+      .search-section {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+        padding: 5rem 2rem;
+      }
+
+      .how-section,
+      .wallet-section,
+      .testimonials-section,
+      .cta-section {
+        padding: 5rem 2rem;
+      }
+
+      .steps-grid,
+      .t-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .wallet-section {
+        grid-template-columns: 1fr;
+      }
+
+      .search-row {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 2.5rem;
+      }
+
+      .flu-footer {
+        padding: 4rem 2rem 2rem;
+      }
+
+      .cta-btns {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+
+  <!-- ================================================= -->
+  <!-- FLOATING PILL NAVBAR                              -->
+  <!-- ================================================= -->
+  <nav class="flu-navbar" id="flu-navbar">
+    <a href="/" class="nav-logo">FLU</a>
+
+    <div class="nav-center">
+      <a href="/" class="active">Home</a>
+      <a href="/rides/search">Find Ride</a>
+      <a href="/rides/publish">Publish</a>
+      <a href="/history">My Rides</a>
+      <a href="/wallet">Wallet</a>
+    </div>
+
+    <div class="nav-right" id="nav-auth-section">
+      <button class="nav-btn-ghost" onclick="openModal('login')">Login</button>
+      <button class="nav-btn-lime" onclick="openModal('signup')">Get Started</button>
+    </div>
+
+    <div class="nav-user-chip" id="nav-user-chip">
+      <div class="nav-user-avatar" id="nav-avatar-letter">A</div>
+      <span class="nav-user-name" id="nav-user-name-text">User</span>
+      <button class="nav-btn-ghost" onclick="logout()" style="padding:0.4rem 0.8rem; font-size:0.78rem;">Logout</button>
+    </div>
+  </nav>
+
+  <!-- ================================================= -->
+  <!-- HERO SECTION                                      -->
+  <!-- ================================================= -->
+  <section class="hero" id="hero-section"
+    style="background-image: url('../images/bg.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+
+
+    <div class="hero-glow" style="z-index:1;"></div>
+    <div class="hero-glow-2" style="z-index:1;"></div>
+    <div class="hero-lines" style="z-index:1;">
+      <span></span><span></span><span></span><span></span>
+    </div>
+
+    <br><br><br><br><br>
+
+    <h1 class="hero-h1" id="hero-heading" style="position:relative; z-index:2;">
+      <span class="word"><span>SHARE</span></span>
+      <span class="word accent"><span>THE</span></span>
+      <br>
+      <span class="word"><span>ROAD,</span></span>
+      <br>
+      <span class="word"><span>SAVE</span></span>
+      <span class="word accent"><span>THE</span></span>
+      <br>
+      <span class="word"><span>COST.</span></span>
+    </h1>
+
+    <p class="hero-desc" id="hero-desc"
+      style="position:relative; z-index:2; color: rgb(128, 128, 128); font-weight: bolder; font-family: Arial, Helvetica, sans-serif;">
+      India's smartest carpooling platform. Find rides, publish your empty seats,
+      and earn ₹0.5 cashback for every kilometer — all in one seamless experience.
+    </p>
+
+    <div class="hero-cta" id="hero-cta" style="position:relative; z-index:2;">
+      <button class="btn-magnetic"
+        onclick="document.querySelector('.search-section').scrollIntoView({behavior:'smooth', block:'start'})">
+        <span class="btn-text">Find a Ride →</span>
+      </button>
+      <a href="/rides/publish" class="btn-ghost-pill">Publish a Ride</a>
+    </div>
+    <br><br><br>
+  </section>
+
+  <!-- ================================================= -->
+  <!-- MOVING ROAD ANIMATION                             -->
+  <!-- ================================================= -->
+  <div class="road-section">
+    <div class="road-dashes"></div>
+    <div class="road-car"> <img src="/images/car1.png" alt="" style="height:40px;width:auto;"></div>
+    <div class="road-car-2"><img src="/images/car2.png" alt="" style="height:40px;width:auto;"></div>
+    <div class="road-car-3"><img src="/images/car3.png" alt="" style="height:40px;width:auto;"></div>
+    <div class="road-car-4"><img src="/images/car4.png" alt="" style="height:40px;width:auto;"></div>
+    <div class="road-car-5"><img src="/images/car5.png" alt="" style="height:40px;width:auto;"></div>
+    <div class="road-car-6"><img src="/images/car6.png" alt="" style="height:40px;width:auto;"></div>
+  </div>
+
+  <!-- ================================================= -->
+  <!-- MARQUEE STRIP                                     -->
+  <!-- ================================================= -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <div class="marquee-item">Carpool Smarter <span class="marquee-sep">◆</span></div>
+      <div class="marquee-item">Save Fuel <span class="marquee-sep">◆</span></div>
+      <div class="marquee-item">Earn Cashback <span class="marquee-sep">◆</span></div>
+      <div class="marquee-item">Reduce Traffic <span class="marquee-sep">◆</span></div>
+      <div class="marquee-item">Travel Together <span class="marquee-sep">◆</span></div>
+      <div class="marquee-item">FLU Your Ride <span class="marquee-sep">◆</span></div>
+      <div class="marquee-item">Carpool Smarter <span class="marquee-sep">◆</span></div>
+      <div class="marquee-item">Save Fuel <span class="marquee-sep">◆</span></div>
+      <div class="marquee-item">Earn Cashback <span class="marquee-sep">◆</span></div>
+      <div class="marquee-item">Reduce Traffic <span class="marquee-sep">◆</span></div>
+      <div class="marquee-item">Travel Together <span class="marquee-sep">◆</span></div>
+      <div class="marquee-item">FLU Your Ride <span class="marquee-sep">◆</span></div>
+    </div>
+  </div>
+
+  <!-- ================================================= -->
+  <!-- SEARCH SECTION                                    -->
+  <!-- ================================================= -->
+  <section class="search-section"
+    style="background-image: url('../images/bg.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+    <div class="reveal">
+      <p class="section-tag">Book Instantly</p>
+      <h2 class="section-heading">FIND YOUR<br><span class="accent">NEXT RIDE</span></h2>
+      <p
+        style="color:var(--grey); font-size:0.92rem; line-height:1.8; margin-top:1.5rem; max-width:380px; color: #050505;">
+        Enter your route and discover verified drivers heading your way. Real-time availability, transparent pricing.
+      </p>
+      <br><br>
+      <div class="hero-badge" id="hero-badge" style="position:relative; z-index:2;">
+        <div class="badge-dot"></div>
+        <span class="badge-text">Now live across Northern India!</span>
+      </div>
+    </div>
+
+    <div class="search-card reveal reveal-delay-1">
+      <div class="search-row">
+
+        <!-- FROM with autocomplete -->
+        <div class="sf-wrap">
+          <p class="s-label">
+            <img src="/images/location-pin.png" alt=""
+              style="height:12px;width:auto;margin-right:4px;vertical-align:middle;" />
+            From
+          </p>
+          <input type="text" id="from-input" class="s-input" placeholder="e.g. Ambala" autocomplete="off"
+            oninput="acShow('from-input','from-drop')" onfocus="acShow('from-input','from-drop')"
+            onblur="setTimeout(()=>acClose('from-drop'),200)" onkeydown="acKey(event,'from-input','from-drop')" />
+          <div class="ac-dropdown" id="from-drop"></div>
+        </div>
+
+        <!-- TO with autocomplete -->
+        <div class="sf-wrap">
+          <p class="s-label">To</p>
+          <input type="text" id="to-input" class="s-input" placeholder="e.g. Karnal" autocomplete="off"
+            oninput="acShow('to-input','to-drop')" onfocus="acShow('to-input','to-drop')"
+            onblur="setTimeout(()=>acClose('to-drop'),200)" onkeydown="acKey(event,'to-input','to-drop')" />
+          <div class="ac-dropdown" id="to-drop"></div>
+        </div>
+
+      </div>
+      <button class="s-search-btn" onclick="searchRides()">Search Available Rides →</button>
+    </div>
+  </section>
+
+  <!-- ================================================= -->
+  <!-- HOW IT WORKS                                      -->
+  <!-- ================================================= -->
+  <section class="how-section">
+    <p class="section-tag reveal">How It Works</p>
+    <h2 class="section-heading reveal reveal-delay-1" style="color: white;">THREE STEPS<br><span class="accent">TO YOUR
+        RIDE</span></h2>
+
+    <div class="steps-grid">
+      <div class="step-card reveal reveal-delay-1">
+        <div class="step-num">01</div>
+        <div class="step-icon-wrap">
+          <img src="/images/icon-search.png" alt="Search" style="width:24px; height:24px;" />
+        </div>
+        <h3 class="step-title">Search a Ride</h3>
+        <p class="step-desc">Enter pickup and destination. We surface verified rides heading your way in real-time.</p>
+      </div>
+
+      <div class="step-card reveal reveal-delay-2">
+        <div class="step-num">02</div>
+        <div class="step-icon-wrap">
+          <img src="/images/icon-razorpay.png" alt="Razorpay" style="width:24px; height:24px;" />
+        </div>
+        <h3 class="step-title">Book Your Seat</h3>
+        <p class="step-desc">Pick the ride that fits your schedule. Pay securely with Razorpay. Instant confirmation.
+        </p>
+      </div>
+
+      <div class="step-card reveal reveal-delay-3">
+        <div class="step-num">03</div>
+        <div class="step-icon-wrap">
+          <img src="/images/icon-wallet.png" alt="Wallet" style="width:24px; height:24px;" />
+        </div>
+        <h3 class="step-title">Earn Cashback</h3>
+        <p class="step-desc">₹0.5 per kilometer lands in your FLU Wallet automatically. Redeem to your bank anytime.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================= -->
+  <!-- WALLET SECTION                                    -->
+  <!-- ================================================= -->
+  <section class="wallet-section"
+    style="background-image: url('../images/bg.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+    <div class="reveal">
+      <p class="section-tag">FLU Wallet</p>
+      <h2 class="section-heading">RIDE MORE,<br><span class="accent">EARN MORE</span></h2>
+      <p
+        style="color:var(--black); font-size:0.92rem; line-height:1.8; margin-top:1.5rem; margin-bottom:2.5rem; max-width:400px;">
+        Every kilometer you travel credits ₹0.5 to your wallet — no cap, no expiry.
+        Powered by Razorpay, withdraw to your bank whenever you want.
+      </p>
+      <a href="/wallet" class="btn-magnetic" style="display:inline-block;">
+        <span class="btn-text">Open FLU Wallet →</span>
+      </a>
+    </div>
+
+    <div class="wallet-ui reveal reveal-delay-1">
+      <img src="/images/icon-wallet.png" alt="FLU Wallet"
+        style="width:100%; max-width:340px; margin-bottom:1.5rem; display:block;" />
+      <div class="w-chip">
+        <span style="width:6px;height:6px;background:var(--lime);border-radius:50%;display:inline-block;"></span>
+        FLU Wallet
+      </div>
+      <div class="w-balance">₹0.00</div>
+      <div class="w-balance-label">Start riding to earn cashback</div>
+      <hr class="w-divider">
+      <div class="w-row"><span class="w-row-k">Cashback Rate</span><span class="w-row-v lime">₹0.5 / km</span></div>
+      <div class="w-row"><span class="w-row-k">Payment Gateway</span><span class="w-row-v">Razorpay</span></div>
+      <div class="w-row"><span class="w-row-k">Min. Redemption</span><span class="w-row-v">₹10</span></div>
+      <div class="w-row"><span class="w-row-k">Expiry</span><span class="w-row-v lime">Never</span></div>
+      <button class="w-redeem-btn" onclick="openModal('login')">Redeem Balance →</button>
+    </div>
+  </section>
+
+  <!-- ================================================= -->
+  <!-- TESTIMONIALS                                      -->
+  <!-- ================================================= -->
+  <section class="testimonials-section">
+    <p class="section-tag reveal">What Users Say</p>
+    <h2 class="section-heading reveal-delay-1" style="color: white;">REAL RIDERS,<br><span class="accent">REAL
+        REVIEWS</span></h2>
+
+    <div class="t-grid">
+      <div class="t-card reveal reveal-delay-1">
+        <div class="t-rating">★★★★★</div>
+        <p class="t-quote">"Saved close to ₹3000 last month by sharing my daily office commute. The cashback adds up
+          faster than I expected."</p>
+        <div class="t-author">
+          <div class="t-av" style="background:var(--lime);">R</div>
+          <div>
+            <div class="t-name">Rahul Sharma</div>
+            <div class="t-location">Delhi</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="t-card reveal reveal-delay-2">
+        <div class="t-rating">★★★★★</div>
+        <p class="t-quote">"Publishing my ride took 2 minutes. I now cover my entire fuel cost just from the passengers
+          I carry each week."</p>
+        <div class="t-author">
+          <div class="t-av" style="background:#34C759;">P</div>
+          <div>
+            <div class="t-name">Priya Nair</div>
+            <div class="t-location">Chandigarh</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="t-card reveal reveal-delay-3">
+        <div class="t-rating">★★★★★</div>
+        <p class="t-quote">"Clean interface, fast booking, and Razorpay makes payments feel completely safe. Exactly
+          what India needed."</p>
+        <div class="t-author">
+          <div class="t-av" style="background:#3498DB;">A</div>
+          <div>
+            <div class="t-name">Arjun Singh</div>
+            <div class="t-location">Amritsar</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================= -->
+  <!-- FINAL CTA SECTION                                 -->
+  <!-- ================================================= -->
+  <section class="cta-section reveal"
+    style="background-image: url('../images/bg.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+    <div class="cta-glow"></div>
+    <h2 class="cta-h2">READY TO<br><span class="accent">FLU?</span></h2>
+    <p class="cta-desc" style="color: #050505;">Join thousands of smart commuters saving money and reducing their carbon
+      footprint every single day.</p>
+    <div class="cta-btns">
+      <button class="btn-magnetic" onclick="openModal('signup')">
+        <span class="btn-text">Create Free Account</span>
+      </button>
+      <a href="/rides/search" class="btn-ghost-pill">Browse Rides</a>
+    </div>
+  </section>
+
+  <!-- ================================================= -->
+  <!-- FOOTER                                            -->
+  <!-- ================================================= -->
+  <footer class="flu-footer">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand-name">FLU</div>
+        <p class="footer-desc">India's smart carpooling platform. Save money, reduce traffic, travel together.</p>
+      </div>
+      <div>
+        <p class="footer-col-title">Platform</p>
+        <div class="footer-links">
+          <a href="/rides/search">Find Ride</a>
+          <a href="/rides/publish">Publish Ride</a>
+          <a href="/history">My Rides</a>
+          <a href="/wallet">FLU Wallet</a>
+        </div>
+      </div>
+      <div>
+        <p class="footer-col-title">Company</p>
+        <div class="footer-links">
+          <a href="#">About</a>
+          <a href="#">Careers</a>
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+        </div>
+      </div>
+      <div>
+        <p class="footer-col-title">Contact</p>
+        <div class="footer-links">
+          <a href="mailto:support@flu.in">support@flu.in</a>
+          <a href="tel:+917277200059">+91 72772 00059</a>
+          <span style="color:#7e7c7c; font-size:0.85rem;">India</span>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 FLU — Your Ride. All rights reserved.</span>
+      <span class="footer-version">v1.0.0</span>
+    </div>
+  </footer>
+
+  <!-- ================================================= -->
+  <!-- LOGIN MODAL                                       -->
+  <!-- ================================================= -->
+  <div class="modal-backdrop" id="login-modal">
+    <div class="modal-panel">
+      <button type="button" class="modal-close-btn" onclick="closeModal(); window.location.href='/';">✕</button>
+      <div class="modal-title">WELCOME BACK</div>
+      <div class="modal-sub">Login to your FLU account</div>
+      <div class="modal-err" id="login-err"></div>
+      <form onsubmit="handleLogin(event)">
+        <div class="m-group"><label class="m-label">Email</label><input type="email" id="login-email" class="m-input"
+            placeholder="you@example.com" required></div>
+        <div class="m-group"><label class="m-label">Password</label><input type="password" id="login-password"
+            class="m-input" placeholder="••••••••" required></div>
+        <button type="submit" class="m-submit">Login →</button>
+      </form>
+      <div class="m-divider">or</div>
+      <button class="m-google" onclick="handleGoogleAuth()">
+        <svg width="16" height="16" viewBox="0 0 24 24">
+          <path fill="#4285F4"
+            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+          <path fill="#34A853"
+            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+          <path fill="#FBBC05"
+            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+          <path fill="#EA4335"
+            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+        </svg>
+        Continue with Google
+      </button>
+      <div class="m-switch">No account? <a onclick="openModal('signup')">Sign up free</a></div>
+    </div>
+  </div>
+
+  <!-- ================================================= -->
+  <!-- SIGNUP MODAL                                      -->
+  <!-- ================================================= -->
+  <div class="modal-backdrop" id="signup-modal">
+    <div class="modal-panel">
+      <button type="button" class="modal-close-btn" onclick="closeModal(); window.location.href='/';">✕</button>
+      <div class="modal-title">JOIN FLU</div>
+      <div class="modal-sub">Create your free account in seconds</div>
+      <div class="modal-err" id="signup-err"></div>
+      <form onsubmit="handleSignup(event)">
+        <div class="m-group"><label class="m-label">Full Name</label><input type="text" id="signup-name" class="m-input"
+            placeholder="Arsh Wadhwa" required></div>
+        <div class="m-group"><label class="m-label">Email</label><input type="email" id="signup-email" class="m-input"
+            placeholder="you@example.com" required></div>
+        <div class="m-group"><label class="m-label">Phone</label><input type="tel" id="signup-phone" class="m-input"
+            placeholder="+91 98765 43210" required></div>
+        <div class="m-group"><label class="m-label">Password</label><input type="password" id="signup-password"
+            class="m-input" placeholder="••••••••" required></div>
+        <button type="submit" class="m-submit">Create Account →</button>
+      </form>
+      <div class="m-divider">or</div>
+      <button class="m-google" onclick="handleGoogleAuth()">
+        <svg width="16" height="16" viewBox="0 0 24 24">
+          <path fill="#4285F4"
+            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+          <path fill="#34A853"
+            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+          <path fill="#FBBC05"
+            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+          <path fill="#EA4335"
+            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+        </svg>
+        Continue with Google
+      </button>
+      <div class="m-switch">Already have an account? <a onclick="openModal('login')">Login</a></div>
+    </div>
+  </div>
+
+  <!-- ================================================= -->
+  <!-- JAVASCRIPT                                        -->
+  <!-- ================================================= -->
+  <script>
+    // =============================================
+    // NAVBAR — hide on scroll down, show on scroll up
+    // =============================================
+    let lastScroll = 0;
+    const navbar = document.getElementById('flu-navbar');
+    window.addEventListener('scroll', () => {
+      const current = window.scrollY;
+      if (current > lastScroll && current > 120) {
+        navbar.classList.add('nav-hidden');
+      } else {
+        navbar.classList.remove('nav-hidden');
+      }
+      lastScroll = current;
+    });
+
+    // =============================================
+    // HERO ENTRANCE ANIMATION
+    // =============================================
+    window.addEventListener('load', () => {
+      setTimeout(() => document.getElementById('hero-badge').classList.add('visible'), 300);
+      document.querySelectorAll('.hero-h1 .word span').forEach((span, i) => {
+        setTimeout(() => {
+          span.style.transition = 'transform 0.85s cubic-bezier(0.16,1,0.3,1)';
+          span.style.transform = 'translateY(0)';
+        }, 450 + i * 110);
+      });
+      setTimeout(() => document.getElementById('hero-desc').classList.add('visible'), 1000);
+      setTimeout(() => document.getElementById('hero-cta').classList.add('visible'), 1150);
+    });
+
+    // =============================================
+    // SCROLL REVEAL — IntersectionObserver
+    // =============================================
+    const revealObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    // =============================================
+    // MAGNETIC BUTTON EFFECT
+    // =============================================
+    document.querySelectorAll('.btn-magnetic').forEach(btn => {
+      btn.addEventListener('mousemove', e => {
+        const rect = btn.getBoundingClientRect();
+        const dx = e.clientX - (rect.left + rect.width / 2);
+        const dy = e.clientY - (rect.top + rect.height / 2);
+        btn.style.transform = `translate(${dx * 0.22}px, ${dy * 0.22}px)`;
+      });
+      btn.addEventListener('mouseleave', () => {
+        btn.style.transform = '';
+      });
+    });
+
+    // =============================================
+    // MODAL FUNCTIONS
+    // =============================================
+    function openModal(type) {
+      document.getElementById('login-modal').classList.remove('open');
+      document.getElementById('signup-modal').classList.remove('open');
+      document.getElementById(type + '-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+      document.getElementById('login-modal').classList.remove('open');
+      document.getElementById('signup-modal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    ['login-modal', 'signup-modal'].forEach(id => {
+      document.getElementById(id).addEventListener('click', function (e) {
+        if (e.target === this) closeModal();
+      });
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    // =============================================
+    // CITY LIST — Haryana + Punjab (46 cities)
+    // =============================================
+    const FLU_CITIES = [
+      'Ambala', 'Bhiwani', 'Charkhi Dadri', 'Faridabad', 'Fatehabad',
+      'Gurugram', 'Hisar', 'Jhajjar', 'Jind', 'Kaithal', 'Karnal',
+      'Kurukshetra', 'Mahendragarh', 'Nuh', 'Palwal', 'Panchkula',
+      'Panipat', 'Rewari', 'Rohtak', 'Sirsa', 'Sonipat', 'Yamunanagar',
+      'Amritsar', 'Barnala', 'Bathinda', 'Faridkot', 'Fatehgarh Sahib',
+      'Fazilka', 'Ferozepur', 'Gurdaspur', 'Hoshiarpur', 'Jalandhar',
+      'Kapurthala', 'Ludhiana', 'Malerkotla', 'Mansa', 'Moga', 'Muktsar',
+      'Pathankot', 'Patiala', 'Rupnagar', 'Mohali', 'Sangrur',
+      'Nawanshahr', 'Tarn Taran', 'Chandigarh'
+    ].sort();
+
+    fetch('/data/cities.json')
+      .then(r => r.json())
+      .then(d => {
+        if (d.allCities && d.allCities.length) {
+          FLU_CITIES.splice(0, FLU_CITIES.length, ...d.allCities.sort());
+        }
+      })
+      .catch(() => { });
+
+    // =============================================
+    // AUTOCOMPLETE ENGINE
+    // =============================================
+    const _acIdx = { 'from-drop': -1, 'to-drop': -1 };
+
+    function acShow(inputId, dropId) {
+      const val = document.getElementById(inputId).value.trim().toLowerCase();
+      const drop = document.getElementById(dropId);
+      let matches = val.length === 0
+        ? FLU_CITIES.slice(0, 8)
+        : [
+          ...FLU_CITIES.filter(c => c.toLowerCase().startsWith(val)),
+          ...FLU_CITIES.filter(c => !c.toLowerCase().startsWith(val) && c.toLowerCase().includes(val))
+        ].slice(0, 10);
+      if (!matches.length) { drop.classList.remove('open'); return; }
+      _acIdx[dropId] = -1;
+      drop.innerHTML = matches.map(city => {
+        let disp = city;
+        if (val) {
+          const i = city.toLowerCase().indexOf(val);
+          disp = city.slice(0, i) + '<b>' + city.slice(i, i + val.length) + '</b>' + city.slice(i + val.length);
+        }
+        return `<div class="ac-item" data-city="${city}" onmousedown="acPick('${inputId}','${dropId}','${city}')">${disp}</div>`;
+      }).join('');
+      drop.classList.add('open');
+    }
+
+    function acPick(inputId, dropId, city) {
+      document.getElementById(inputId).value = city;
+      acClose(dropId);
+      if (inputId === 'from-input') document.getElementById('to-input').focus();
+    }
+
+    function acClose(dropId) {
+      const drop = document.getElementById(dropId);
+      if (drop) drop.classList.remove('open');
+      _acIdx[dropId] = -1;
+    }
+
+    function acKey(e, inputId, dropId) {
+      const drop = document.getElementById(dropId);
+      const items = drop.querySelectorAll('.ac-item');
+      let idx = _acIdx[dropId];
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        idx = Math.min(idx + 1, items.length - 1);
+        _acIdx[dropId] = idx;
+        items.forEach((it, i) => it.classList.toggle('ac-selected', i === idx));
+        items[idx]?.scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        idx = Math.max(idx - 1, 0);
+        _acIdx[dropId] = idx;
+        items.forEach((it, i) => it.classList.toggle('ac-selected', i === idx));
+        items[idx]?.scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (idx >= 0 && items[idx]) acPick(inputId, dropId, items[idx].dataset.city);
+        else { acClose(dropId); searchRides(); }
+      } else if (e.key === 'Escape') {
+        acClose(dropId);
+      }
+    }
+
+    // =============================================
+    // SEARCH RIDES
+    // =============================================
+    function searchRides() {
+      const from = document.getElementById('from-input').value.trim();
+      const to = document.getElementById('to-input').value.trim();
+      if (!from) {
+        const el = document.getElementById('from-input');
+        el.focus();
+        el.style.borderColor = 'rgba(200,241,53,0.7)';
+        setTimeout(() => el.style.borderColor = '', 1500);
+        return;
+      }
+      if (!to) {
+        const el = document.getElementById('to-input');
+        el.focus();
+        el.style.borderColor = 'rgba(200,241,53,0.7)';
+        setTimeout(() => el.style.borderColor = '', 1500);
+        return;
+      }
+      const today = new Date().toISOString().split('T')[0];
+      window.location.href = `/rides/search?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&date=${today}`;
+    }
+
+    // =============================================
+    // FIREBASE AUTH FUNCTIONS
+    // =============================================
+    async function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      const errDiv = document.getElementById('login-err');
+      errDiv.style.display = 'none';
+      try {
+        const cred = await firebase.auth().signInWithEmailAndPassword(email, password);
+        const token = await cred.user.getIdToken();
+        await syncUserWithBackend(token, cred.user);
+        closeModal();
+        window.location.reload();
+      } catch (err) {
+        errDiv.textContent = firebaseErrMsg(err.code);
+        errDiv.style.display = 'block';
+      }
+    }
+
+    async function handleSignup(e) {
+      e.preventDefault();
+      const name = document.getElementById('signup-name').value;
+      const email = document.getElementById('signup-email').value;
+      const password = document.getElementById('signup-password').value;
+      const phone = document.getElementById('signup-phone').value;
+      const errDiv = document.getElementById('signup-err');
+      errDiv.style.display = 'none';
+      try {
+        const cred = await firebase.auth().createUserWithEmailAndPassword(email, password);
+        await cred.user.updateProfile({ displayName: name });
+        const token = await cred.user.getIdToken();
+        await syncUserWithBackend(token, cred.user, { name, phone });
+        closeModal();
+        window.location.reload();
+      } catch (err) {
+        console.log('CODE:', err.code);
+        console.log('MESSAGE:', err.message);
+        errDiv.textContent = firebaseErrMsg(err.code);
+        errDiv.style.display = 'block';
+      }
+    }
+
+    async function handleGoogleAuth() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      try {
+        const cred = await firebase.auth().signInWithPopup(provider);
+        const token = await cred.user.getIdToken();
+        await syncUserWithBackend(token, cred.user);
+        closeModal();
+        window.location.reload();
+      } catch (err) {
+        alert(firebaseErrMsg(err.code));
+      }
+    }
+
+    async function syncUserWithBackend(token, fbUser, extra = {}) {
+      const res = await fetch('/api/auth/firebase-sync', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name: extra.name || fbUser.displayName || 'User',
+          email: fbUser.email,
+          phone: extra.phone || ''
+        })
+      });
+      const data = await res.json();
+      localStorage.setItem('flu_token', token);
+      localStorage.setItem('flu_user', JSON.stringify(data.user));
+      updateNavAuth(data.user);
+    }
+
+    function firebaseErrMsg(code) {
+      const map = {
+        'auth/user-not-found': 'Email Not registered.',
+        'auth/wrong-password': 'Wrong Password.',
+        'auth/email-already-in-use': 'This Email is Already registered.',
+        'auth/weak-password': 'Password Should Be of Atleast 6 characters.',
+        'auth/invalid-email': 'Enter Valid Email Address.',
+        'auth/popup-closed-by-user': 'Google sign-in canceled.',
+        'auth/invalid-credential': 'Email or Password is Incorrect.',
+      };
+      return map[code] || 'Something Went Wrong,Try Again !';
+    }
+    // =============================================
+    // SESSION MANAGEMENT
+    // =============================================
+    function saveSession(token, user) {
+      localStorage.setItem('flu_token', token);
+      localStorage.setItem('flu_user', JSON.stringify(user));
+      updateNavAuth(user);
+    }
+
+    function getSessionUser() {
+      const u = localStorage.getItem('flu_user');
+      return u ? JSON.parse(u) : null;
+    }
+
+    function logout() {
+      localStorage.removeItem('flu_token');
+      localStorage.removeItem('flu_user');
+      window.location.href = '/';
+    }
+
+    // =============================================
+    // NAVBAR AUTH STATE UPDATE
+    // =============================================
+    function updateNavAuth(user) {
+      if (!user) return;
+      const authSection = document.getElementById('nav-auth-section');
+      const chip = document.getElementById('nav-user-chip');
+      const avatarEl = document.getElementById('nav-avatar-letter');
+      const nameEl = document.getElementById('nav-user-name-text');
+      if (authSection) authSection.style.display = 'none';
+      if (chip) chip.style.display = 'flex';
+      if (avatarEl) avatarEl.textContent = user.name.charAt(0).toUpperCase();
+      if (nameEl) nameEl.textContent = user.name.split(' ')[0];
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const user = getSessionUser();
+      if (user) updateNavAuth(user);
+    });
+  </script>
+
+  <%- include('partials/footer') %>

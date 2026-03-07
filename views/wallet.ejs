@@ -1,0 +1,926 @@
+<%- include('./partials/header') %>
+
+<style>
+@import url('https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@300,400,500,700&display=swap');
+
+:root {
+  --lime:   #C8F135;
+  --mint:   #95CFB0;
+  --black:  #080808;
+  --white:  #ffffff;
+  --card:   #101010;
+  --border: #1e1e1e;
+  --grey:   #888;
+  --dark:   #1c1c1c;
+  --gold:   #F5C542;
+  --gold2:  #E8A820;
+  --red:    #ff4040;
+  --orange: #ff8c00;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--black); color:var(--white); font-family:'Satoshi',sans-serif; overflow-x:hidden; min-height:100vh; }
+a { text-decoration:none; color:inherit; }
+button { font-family:'Satoshi',sans-serif; cursor:pointer; }
+
+/* GRAIN */
+body::after {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:9999;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity:0.03;
+}
+
+/* ══ NAVBAR ══ */
+.nav {
+  position:fixed; top:1.5rem; left:50%; transform:translateX(-50%);
+  z-index:1000; width:calc(100% - 4rem); max-width:1100px;
+  display:flex; align-items:center; justify-content:space-between;
+  background:rgba(8,8,8,0.8); backdrop-filter:blur(24px);
+  border:1px solid var(--border); border-radius:100px;
+  padding:0.65rem 0.65rem 0.65rem 1.8rem; transition:transform .4s;
+}
+.nav.hidden { transform:translateX(-50%) translateY(-140%); }
+.nav-logo { font-family:'Clash Display',sans-serif; font-size:1.25rem; font-weight:700; letter-spacing:4px; color:var(--lime); }
+.nav-links { display:flex; gap:.2rem; position:absolute; left:50%; transform:translateX(-50%); }
+.nav-links a { font-size:.8rem; color:var(--grey); padding:.45rem 1rem; border-radius:100px; transition:color .2s,background .2s; }
+.nav-links a:hover { color:var(--white); background:var(--dark); }
+.nav-links a.active { color:var(--black); background:var(--lime); }
+.nav-chip { display:flex; align-items:center; gap:.5rem; background:var(--dark); border-radius:100px; padding:.3rem .9rem .3rem .4rem; }
+.nav-av { width:24px; height:24px; border-radius:50%; background:var(--lime); color:var(--black); font-size:.68rem; font-weight:700; display:flex; align-items:center; justify-content:center; }
+.nav-uname { font-size:.78rem; color:var(--white); font-weight:500; }
+.btn-ghost-nav { background:transparent; border:none; color:var(--grey); font-size:.8rem; padding:.45rem .9rem; border-radius:100px; transition:color .2s; }
+.btn-ghost-nav:hover { color:var(--white); }
+
+/* ══ BACK PILL ══ */
+.back-pill-wrap { padding:6.5rem 4rem 0; }
+.back-pill { display:inline-flex; align-items:center; gap:.5rem; background:rgba(255,255,255,.04); border:1px solid var(--border); color:var(--grey); font-size:.78rem; padding:.4rem 1rem; border-radius:100px; opacity:0; transform:translateY(10px); animation:fadeUp .6s ease .2s forwards; transition:color .2s,border-color .2s; }
+.back-pill:hover { color:var(--white); border-color:#444; }
+@keyframes fadeUp { to{opacity:1;transform:translateY(0)} }
+
+/* ══ HERO WITH COINS CANVAS ══ */
+.hero {
+  min-height:44vh; display:flex; flex-direction:column; justify-content:flex-end;
+  padding:2rem 4rem 3.5rem; position:relative; overflow:hidden;
+  border-bottom:1px solid var(--border);
+}
+#coin-canvas {
+  position:absolute; inset:0; pointer-events:none; z-index:0;
+}
+.hero-glow { position:absolute; top:-10%; left:50%; transform:translateX(-50%); width:900px; height:600px; background:radial-gradient(ellipse,rgba(245,197,66,.07) 0%,transparent 60%); pointer-events:none; }
+.hero-glow2 { position:absolute; bottom:-20%; right:0; width:500px; height:400px; background:radial-gradient(ellipse,rgba(200,241,53,.05) 0%,transparent 65%); pointer-events:none; }
+.hero-lines { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.hero-lines span { position:absolute; height:1px; background:linear-gradient(90deg,transparent,rgba(245,197,66,.1),transparent); animation:hline 4s linear infinite; opacity:0; }
+.hero-lines span:nth-child(1){ top:25%; width:45%; animation-delay:0s; }
+.hero-lines span:nth-child(2){ top:55%; width:60%; animation-delay:1.5s; }
+.hero-lines span:nth-child(3){ top:75%; width:30%; animation-delay:2.8s; }
+@keyframes hline { 0%{left:-60%;opacity:0} 10%{opacity:1} 90%{opacity:.5} 100%{left:110%;opacity:0} }
+
+.hero-content { position:relative; z-index:1; }
+.hero-h1 { font-family:'Clash Display',sans-serif; font-size:clamp(3rem,8vw,7rem); font-weight:700; line-height:.9; letter-spacing:-.5px; }
+.hero-h1 .word { display:inline-block; overflow:hidden; margin-right:.1em; }
+.hero-h1 .word span { display:inline-block; transform:translateY(110%); transition:transform .8s cubic-bezier(.16,1,.3,1); }
+.hero-h1 .gold { color:var(--gold); }
+.hero-h1 .lime { color:var(--lime); }
+.hero-sub { color:var(--grey); font-size:.92rem; line-height:1.8; margin-top:1.5rem; opacity:0; animation:fadeUp .6s ease 1s forwards; max-width:500px; }
+
+/* ══ MAIN LAYOUT ══ */
+.wallet-layout {
+  max-width:1100px; margin:0 auto;
+  padding:3rem 4rem 6rem;
+  display:grid; grid-template-columns:1fr 340px;
+  gap:2rem; align-items:start;
+}
+
+/* ══ LEFT COLUMN ══ */
+.left-col { display:flex; flex-direction:column; gap:1.5rem; }
+
+/* ── BALANCE CARD ── */
+.balance-card {
+  background:var(--card); border:1px solid rgba(245,197,66,.2);
+  border-radius:24px; padding:2.5rem;
+  position:relative; overflow:hidden;
+  opacity:0; animation:fadeUp .5s ease .1s forwards;
+}
+.balance-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--gold),var(--lime),var(--gold),transparent); }
+.balance-card::after { content:''; position:absolute; top:-40%; right:-10%; width:400px; height:400px; border-radius:50%; background:radial-gradient(circle,rgba(245,197,66,.08) 0%,transparent 65%); pointer-events:none; }
+
+.bc-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:1.8rem; }
+.bc-label { font-size:.62rem; letter-spacing:3px; text-transform:uppercase; color:var(--grey); font-weight:600; margin-bottom:.5rem; }
+.bc-balance {
+  font-family:'Clash Display',sans-serif;
+  font-size:clamp(3rem,8vw,5.5rem); font-weight:700;
+  line-height:1; letter-spacing:-3px;
+  background:linear-gradient(135deg, var(--gold) 0%, var(--lime) 60%, var(--gold2) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+  transition:all .5s ease;
+}
+.bc-balance.bump { transform:scale(1.04); }
+.bc-rupee-lbl { font-size:.8rem; color:var(--grey); margin-top:.3rem; }
+
+.bc-badge {
+  display:flex; align-items:center; gap:.4rem; flex-direction:column; align-items:flex-end;
+}
+.bc-rate-pill {
+  background:rgba(200,241,53,.08); border:1px solid rgba(200,241,53,.2);
+  border-radius:100px; padding:.35rem .85rem;
+  font-size:.7rem; color:var(--lime); font-weight:600; letter-spacing:1px;
+}
+.bc-earn-pill {
+  background:rgba(245,197,66,.08); border:1px solid rgba(245,197,66,.2);
+  border-radius:100px; padding:.35rem .85rem;
+  font-size:.7rem; color:var(--gold); font-weight:600; letter-spacing:1px;
+}
+
+/* Progress to withdrawal */
+.bc-progress { margin-bottom:1.5rem; }
+.bc-prog-top { display:flex; justify-content:space-between; font-size:.72rem; color:var(--grey); margin-bottom:.5rem; }
+.bc-prog-top b { color:var(--lime); }
+.bc-prog-track { height:6px; background:#1a1a1a; border-radius:6px; overflow:hidden; }
+.bc-prog-fill {
+  height:100%; border-radius:6px;
+  background:linear-gradient(90deg, var(--gold2), var(--lime));
+  transition:width .8s cubic-bezier(.16,1,.3,1);
+  position:relative; overflow:hidden;
+}
+.bc-prog-fill::after {
+  content:''; position:absolute; top:0; left:-100%; width:60%; height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);
+  animation:shine 2.5s ease infinite;
+}
+@keyframes shine { 0%{left:-60%} 100%{left:120%} }
+
+/* Withdraw highlight line */
+.withdraw-highlight {
+  background:linear-gradient(135deg,rgba(200,241,53,.08),rgba(245,197,66,.05));
+  border:1px solid rgba(200,241,53,.25); border-radius:14px;
+  padding:1rem 1.3rem;
+  display:flex; align-items:center; gap:.85rem;
+  margin-bottom:1.5rem;
+  position:relative; overflow:hidden;
+}
+.withdraw-highlight::before {
+  content:''; position:absolute; left:0; top:0; bottom:0; width:3px;
+  background:linear-gradient(180deg,var(--lime),var(--gold));
+  border-radius:14px 0 0 14px;
+}
+.wh-ico { font-size:1.3rem; flex-shrink:0; }
+.wh-text { font-size:.8rem; line-height:1.6; }
+.wh-text b { color:var(--lime); }
+.wh-text span { color:var(--grey); }
+
+/* Action buttons */
+.bc-actions { display:flex; gap:.75rem; flex-wrap:wrap; }
+.btn-withdraw {
+  flex:1; background:var(--lime); color:var(--black); border:none;
+  padding:.85rem 1.5rem; border-radius:12px;
+  font-size:.85rem; font-weight:700; font-family:'Clash Display',sans-serif;
+  letter-spacing:.5px; -webkit-text-fill-color:var(--black);
+  transition:opacity .2s, transform .2s;
+}
+.btn-withdraw:hover { opacity:.88; transform:translateY(-1px); }
+.btn-withdraw:disabled { background:var(--dark); cursor:not-allowed; transform:none; opacity:1; -webkit-text-fill-color:var(--grey); }
+.btn-ghost-action {
+  flex:1; background:transparent; border:1px solid var(--border);
+  color:var(--grey); padding:.85rem 1.5rem; border-radius:12px;
+  font-size:.85rem; font-weight:600;
+  transition:border-color .2s, color .2s;
+}
+.btn-ghost-action:hover { border-color:var(--mint); color:var(--mint); }
+
+/* ── STATS ROW ── */
+.stats-row {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:1rem;
+  opacity:0; animation:fadeUp .5s ease .2s forwards;
+}
+.stat-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:16px; padding:1.2rem 1.3rem;
+  position:relative; overflow:hidden;
+  transition:border-color .3s;
+}
+.stat-card:hover { border-color:#2a2a2a; }
+.stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(245,197,66,.12),transparent); }
+.stat-num { font-family:'Clash Display',sans-serif; font-size:1.6rem; font-weight:700; line-height:1; }
+.stat-num.gold { color:var(--gold); }
+.stat-num.lime { color:var(--lime); }
+.stat-num.mint { color:var(--mint); }
+.stat-lbl { font-size:.62rem; color:var(--grey); letter-spacing:2px; text-transform:uppercase; margin-top:.3rem; }
+
+/* ── HOW IT WORKS ── */
+.how-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:20px; padding:1.8rem;
+  opacity:0; animation:fadeUp .5s ease .3s forwards;
+}
+.how-title { font-family:'Clash Display',sans-serif; font-size:.95rem; font-weight:700; margin-bottom:1.3rem; display:flex; align-items:center; gap:.6rem; }
+.how-title::before { content:'💡'; }
+.how-steps { display:flex; flex-direction:column; gap:.85rem; }
+.how-step { display:flex; align-items:flex-start; gap:.85rem; }
+.how-num { width:26px; height:26px; border-radius:50%; background:rgba(245,197,66,.1); border:1px solid rgba(245,197,66,.2); color:var(--gold); font-size:.72rem; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:.05rem; }
+.how-text { font-size:.8rem; color:var(--grey); line-height:1.6; }
+.how-text b { color:var(--white); }
+
+/* ══ RIGHT COLUMN ══ */
+.right-col { position:sticky; top:7rem; display:flex; flex-direction:column; gap:1.2rem; }
+
+/* ── TRANSACTION HISTORY ── */
+.tx-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:20px; overflow:hidden;
+  opacity:0; animation:fadeUp .5s ease .25s forwards;
+}
+.tx-header {
+  padding:1.3rem 1.5rem; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.tx-title { font-family:'Clash Display',sans-serif; font-size:.95rem; font-weight:700; }
+.tx-count { font-size:.65rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--grey); }
+
+.tx-list { max-height:420px; overflow-y:auto; }
+.tx-list::-webkit-scrollbar { width:3px; }
+.tx-list::-webkit-scrollbar-track { background:transparent; }
+.tx-list::-webkit-scrollbar-thumb { background:#2a2a2a; border-radius:3px; }
+
+.tx-item {
+  padding:1rem 1.5rem; border-bottom:1px solid rgba(30,30,30,.6);
+  display:flex; align-items:center; gap:.9rem;
+  transition:background .2s;
+  opacity:0; transform:translateX(16px);
+  animation:slideIn .4s ease forwards;
+}
+@keyframes slideIn { to{opacity:1;transform:translateX(0)} }
+.tx-item:hover { background:rgba(255,255,255,.02); }
+.tx-item:last-child { border-bottom:none; }
+
+.tx-ico {
+  width:34px; height:34px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:.95rem; flex-shrink:0;
+}
+.tx-ico.earn    { background:rgba(200,241,53,.08); border:1px solid rgba(200,241,53,.12); }
+.tx-ico.withdraw{ background:rgba(245,197,66,.08); border:1px solid rgba(245,197,66,.12); }
+.tx-ico.fine    { background:rgba(255,64,64,.08);  border:1px solid rgba(255,64,64,.12); }
+
+.tx-info { flex:1; }
+.tx-name { font-size:.8rem; font-weight:600; color:var(--white); line-height:1.3; }
+.tx-sub  { font-size:.68rem; color:var(--grey); margin-top:.1rem; }
+.tx-amt  { font-family:'Clash Display',sans-serif; font-size:.95rem; font-weight:700; }
+.tx-amt.plus  { color:var(--lime); }
+.tx-amt.minus { color:var(--red); }
+.tx-amt.gold  { color:var(--gold); }
+
+.tx-empty { padding:3rem 1.5rem; text-align:center; }
+.tx-empty-ico { font-size:2rem; opacity:.3; margin-bottom:.75rem; }
+.tx-empty-txt { font-size:.8rem; color:var(--grey); }
+
+/* ── COIN BURST (when balance increases) ── */
+.coin-burst {
+  position:fixed; pointer-events:none; z-index:8888;
+  font-size:1.4rem; transform:translateY(0); opacity:1;
+  animation:burst .9s ease forwards;
+}
+@keyframes burst {
+  0%   { transform:translateY(0) scale(1);   opacity:1; }
+  60%  { transform:translateY(-70px) scale(1.3); opacity:1; }
+  100% { transform:translateY(-120px) scale(.6); opacity:0; }
+}
+
+/* ══ WITHDRAW MODAL ══ */
+.backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,.92); backdrop-filter:blur(18px); z-index:5000; align-items:center; justify-content:center; }
+.backdrop.open { display:flex; }
+.mpanel { background:var(--card); border:1px solid rgba(245,197,66,.2); border-radius:26px; padding:2.5rem; width:100%; max-width:420px; margin:1rem; position:relative; animation:panelIn .38s cubic-bezier(.16,1,.3,1); }
+@keyframes panelIn { from{opacity:0;transform:translateY(26px) scale(.96)} to{opacity:1;transform:none} }
+.mpanel::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--gold),var(--lime),transparent); border-radius:26px 26px 0 0; }
+.mclose { position:absolute; top:1.2rem; right:1.2rem; width:28px; height:28px; border-radius:50%; background:#1a1a1a; border:1px solid var(--border); color:var(--grey); font-size:.75rem; display:flex; align-items:center; justify-content:center; transition:color .2s; }
+.mclose:hover { color:var(--white); }
+.m-title { font-family:'Clash Display',sans-serif; font-size:1.9rem; font-weight:700; margin-bottom:.3rem; }
+.m-sub { color:var(--grey); font-size:.8rem; margin-bottom:1.8rem; }
+.m-avail { background:rgba(245,197,66,.07); border:1px solid rgba(245,197,66,.18); border-radius:12px; padding:1rem 1.2rem; display:flex; justify-content:space-between; align-items:center; margin-bottom:1.4rem; }
+.m-avail-lbl { font-size:.72rem; color:var(--grey); }
+.m-avail-amt { font-family:'Clash Display',sans-serif; font-size:1.6rem; font-weight:700; color:var(--gold); letter-spacing:-1px; }
+.mg { margin-bottom:.9rem; }
+.ml { font-size:.65rem; color:var(--grey); letter-spacing:2px; text-transform:uppercase; display:block; margin-bottom:5px; }
+.mi { width:100%; background:#111; border:1px solid var(--border); color:var(--white); padding:.82rem 1rem; border-radius:10px; font-size:.86rem; font-family:'Satoshi',sans-serif; outline:none; transition:border-color .25s; }
+.mi::placeholder { color:#2a2a2a; }
+.mi:focus { border-color:var(--gold); }
+.merr { background:rgba(255,60,50,.07); border:1px solid rgba(255,60,50,.18); color:#ff5040; font-size:.78rem; padding:.55rem .9rem; border-radius:10px; margin-bottom:1rem; display:none; }
+.msub { width:100%; background:var(--lime); color:var(--black); border:none; padding:.9rem; border-radius:10px; font-size:.9rem; font-weight:700; font-family:'Clash Display',sans-serif; letter-spacing:1px; margin-top:.4rem; -webkit-text-fill-color:var(--black); transition:opacity .2s; }
+.msub:hover { opacity:.88; }
+.mnote { text-align:center; font-size:.7rem; color:#2a2a2a; margin-top:.75rem; }
+
+/* Auth gate */
+.auth-gate { display:none; flex-direction:column; align-items:center; text-align:center; padding:6rem 2rem; max-width:1100px; margin:0 auto; }
+.auth-gate.show { display:flex; }
+.ag-ico { font-size:3rem; margin-bottom:1.2rem; opacity:.4; }
+.ag-h { font-family:'Clash Display',sans-serif; font-size:1.6rem; font-weight:700; margin-bottom:.75rem; }
+.ag-p { color:var(--grey); font-size:.88rem; margin-bottom:2rem; }
+.btn-lime-pill { background:var(--lime); color:var(--black); border:none; padding:.78rem 2rem; border-radius:100px; font-size:.84rem; font-weight:700; font-family:'Clash Display',sans-serif; -webkit-text-fill-color:var(--black); transition:opacity .2s; }
+.btn-lime-pill:hover { opacity:.88; }
+
+/* Responsive */
+@media(max-width:960px){
+  .nav { width:calc(100% - 2rem); }
+  .nav-links { display:none; }
+  .hero,.back-pill-wrap { padding-left:1.5rem; padding-right:1.5rem; }
+  .wallet-layout { grid-template-columns:1fr; padding:2rem 1.5rem 4rem; }
+  .right-col { position:static; }
+  .stats-row { grid-template-columns:1fr 1fr; }
+}
+</style>
+
+<!-- NAVBAR -->
+<section class="hero" style="background-image: url('../images/bg.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+<nav class="nav" id="nav">
+  <a href="/" class="nav-logo">FLU</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/rides/search">Find Ride</a>
+    <a href="/rides/publish">Publish</a>
+    <a href="/history">My Rides</a>
+    <a href="/wallet" class="active">Wallet</a>
+  </div>
+  <div class="nav-chip" id="nav-chip">
+    <div class="nav-av" id="nav-av">A</div>
+    <span class="nav-uname" id="nav-uname">User</span>
+    <button class="btn-ghost-nav" onclick="logout()">Logout</button>
+  </div>
+</nav>
+
+<div class="back-pill-wrap">
+  <a href="/">← Back to Home</a>
+</div>
+
+<!-- HERO WITH CANVAS -->
+  <canvas id="coin-canvas"></canvas>
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div class="hero-lines"><span></span><span></span><span></span></div>
+  <div class="hero-content">
+    <h1 class="hero-h1" id="hero-h1">
+      <span class="word"><span>YOUR</span></span>
+      <span class="word gold"><span>FLU</span></span>
+      <br>
+      <span class="word"><span>WALLET</span></span>
+      <span class="word lime"><span>💰</span></span>
+    </h1>
+    <p class="hero-sub" style="color: #080808;">Earn ₹0.5 per km every time you book a ride. Withdraw to your bank when you hit ₹100.</p>
+  </div>
+
+<!-- AUTH GATE -->
+<div class="auth-gate show" id="auth-gate">
+  <div class="ag-ico">🔐</div>
+  <h2 class="ag-h">Login to view your Wallet</h2>
+  <p class="ag-p">Your earnings and cashback live here.</p>
+  <button class="btn-lime-pill" onclick="location.href='/'">Go to Homepage</button>
+</div>
+
+<!-- WALLET LAYOUT -->
+<div class="wallet-layout" id="wallet-layout" style="display:none;">
+
+  <!-- LEFT -->
+  <div class="left-col">
+
+    <!-- BALANCE CARD -->
+    <div class="balance-card">
+      <div class="bc-top">
+        <div>
+          <div class="bc-label">Total Balance</div>
+          <div class="bc-balance" id="bc-balance">₹0.00</div>
+          <div class="bc-rupee-lbl">Indian Rupees</div>
+        </div>
+        <div class="bc-badge">
+          <div class="bc-rate-pill">₹0.5 / km earned</div>
+          <div class="bc-earn-pill" id="bc-total-earned">₹0 total earned</div>
+        </div>
+      </div>
+
+      <!-- Progress to ₹100 withdrawal -->
+      <div class="bc-progress">
+        <div class="bc-prog-top">
+          <span>Progress to withdrawal</span>
+          <span><b id="prog-pct">0%</b> of ₹100 minimum</span>
+        </div>
+        <div class="bc-prog-track">
+          <div class="bc-prog-fill" id="prog-fill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <!-- Withdrawal highlight -->
+      <div class="withdraw-highlight">
+        <span class="wh-ico">💸</span>
+        <div class="wh-text">
+          <b>Minimum ₹100 required to withdraw</b> as real money directly to your bank account via Razorpay.
+          <br>
+          <span>Keep riding to unlock your earnings!</span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="bc-actions">
+        <button class="btn-withdraw" id="withdraw-btn" onclick="openWithdraw()" disabled>
+          Withdraw to Bank →
+        </button>
+        <button class="btn-ghost-action" onclick="location.href='/rides/search'">
+          Earn More 🚗
+        </button>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num gold" id="stat-rides">0</div>
+        <div class="stat-lbl">Rides Taken</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num lime" id="stat-km">0 km</div>
+        <div class="stat-lbl">Total Distance</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num mint" id="stat-withdrawn">₹0</div>
+        <div class="stat-lbl">Total Withdrawn</div>
+      </div>
+    </div>
+
+    <!-- HOW IT WORKS -->
+    <div class="how-card">
+      <div class="how-title">How you earn cashback</div>
+      <div class="how-steps">
+        <div class="how-step">
+          <div class="how-num">1</div>
+          <div class="how-text"><b>Book a ride</b> on FLU as a passenger — any route in Haryana or Punjab.</div>
+        </div>
+        <div class="how-step">
+          <div class="how-num">2</div>
+          <div class="how-text"><b>Ride completes</b> → ₹0.5 × km automatically credited to your FLU Wallet.</div>
+        </div>
+        <div class="how-step">
+          <div class="how-num">3</div>
+          <div class="how-text"><b>Hit ₹100 balance</b> → unlock the Withdraw button and transfer directly to your bank via Razorpay.</div>
+        </div>
+        <div class="how-step">
+          <div class="how-num">4</div>
+          <div class="how-text"><b>More you ride, more you earn.</b> 200 km = ₹100 cashback. Simple math!</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: TRANSACTION HISTORY -->
+  <div class="right-col">
+    <div class="tx-card">
+      <div class="tx-header">
+        <span class="tx-title">Transactions</span>
+        <span class="tx-count" id="tx-count">Loading…</span>
+      </div>
+      <div class="tx-list" id="tx-list">
+        <!-- filled by JS -->
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- WITHDRAW MODAL -->
+<div class="backdrop" id="withdraw-modal">
+  <div class="mpanel">
+    <button type="button" class="mclose" onclick="closeWithdraw()">✕</button>
+    <div class="m-title">WITHDRAW</div>
+    <div class="m-sub">Transfer to your bank account via Razorpay</div>
+
+    <div class="m-avail">
+      <span class="m-avail-lbl">Available balance</span>
+      <span class="m-avail-amt" id="m-avail-amt">₹0</span>
+    </div>
+
+    <div class="mg">
+      <label class="ml">Amount to Withdraw (₹)</label>
+      <input type="number" class="mi" id="w-amount" placeholder="Min ₹100" min="100" oninput="validateWithdraw()" />
+    </div>
+    <div class="mg">
+      <label class="ml">Account Number</label>
+      <input type="text" class="mi" id="w-acc" placeholder="Enter bank account number" />
+    </div>
+    <div class="mg">
+      <label class="ml">IFSC Code</label>
+      <input type="text" class="mi" id="w-ifsc" placeholder="e.g. SBIN0001234" />
+    </div>
+
+    <div class="merr" id="w-err"></div>
+    <button class="msub" onclick="confirmWithdraw()">Withdraw via Razorpay →</button>
+    <p class="mnote">🔒 Secured by Razorpay · Processed within 2–3 business days</p>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════
+//  FALLING COINS CANVAS
+// ══════════════════════════════════
+const canvas = document.getElementById('coin-canvas');
+const ctx    = canvas.getContext('2d');
+let coins    = [];
+
+function resizeCanvas() {
+  canvas.width  = canvas.parentElement.offsetWidth;
+  canvas.height = canvas.parentElement.offsetHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+class Coin {
+  constructor() { this.reset(true); }
+  reset(init = false) {
+    this.x    = Math.random() * canvas.width;
+    this.y    = init ? Math.random() * canvas.height : -30;
+    this.r    = 6 + Math.random() * 10;
+    this.vy   = 0.4 + Math.random() * 0.9;
+    this.vx   = (Math.random() - 0.5) * 0.4;
+    this.rot  = Math.random() * Math.PI * 2;
+    this.rotV = (Math.random() - 0.5) * 0.04;
+    this.alpha= 0.12 + Math.random() * 0.18;
+    this.flip = Math.random() * Math.PI * 2;
+    this.flipV= 0.02 + Math.random() * 0.03;
+  }
+  update() {
+    this.y    += this.vy;
+    this.x    += this.vx;
+    this.rot  += this.rotV;
+    this.flip += this.flipV;
+    if (this.y > canvas.height + 30) this.reset();
+  }
+  draw() {
+    const scaleX = Math.cos(this.flip); // coin spin effect
+    ctx.save();
+    ctx.globalAlpha = this.alpha * Math.abs(scaleX);
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.rot);
+    ctx.scale(scaleX, 1);
+
+    // Coin body
+    ctx.beginPath();
+    ctx.arc(0, 0, this.r, 0, Math.PI * 2);
+    const grad = ctx.createRadialGradient(-this.r*.3, -this.r*.3, this.r*.1, 0, 0, this.r);
+    grad.addColorStop(0, '#F5C542');
+    grad.addColorStop(0.6, '#E8A820');
+    grad.addColorStop(1, '#C47E10');
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Rim
+    ctx.strokeStyle = 'rgba(255,200,50,0.5)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // ₹ symbol
+    ctx.globalAlpha = this.alpha * Math.abs(scaleX) * 0.7;
+    ctx.fillStyle = '#7a4e00';
+    ctx.font = `bold ${this.r * 0.9}px Satoshi,sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('₹', 0, 0.5);
+
+    ctx.restore();
+  }
+}
+
+// Spawn coins
+for (let i = 0; i < 28; i++) coins.push(new Coin());
+
+function animateCoins() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  coins.forEach(c => { c.update(); c.draw(); });
+  requestAnimationFrame(animateCoins);
+}
+animateCoins();
+
+// ══════════════════════════════════
+//  APP STATE
+// ══════════════════════════════════
+let walletData = {
+  balance:       0,
+  totalEarned:   0,
+  totalWithdrawn:0,
+  totalKm:       0,
+  totalRides:    0,
+  transactions:  []
+};
+
+// ══════════════════════════════════
+//  NAVBAR
+// ══════════════════════════════════
+let lastY = 0;
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+  document.getElementById('nav').classList.toggle('hidden', y > lastY && y > 100);
+  lastY = y;
+});
+window.addEventListener('load', () => {
+  document.querySelectorAll('.hero-h1 .word span').forEach((s, i) => {
+    setTimeout(() => {
+      s.style.transition = 'transform .85s cubic-bezier(.16,1,.3,1)';
+      s.style.transform  = 'translateY(0)';
+    }, 300 + i * 110);
+  });
+});
+
+// ══════════════════════════════════
+//  INIT
+// ══════════════════════════════════
+document.addEventListener('DOMContentLoaded', async () => {
+  const user = getUser();
+  if (!user) return; // auth gate stays
+
+  document.getElementById('auth-gate').classList.remove('show');
+  document.getElementById('wallet-layout').style.display = 'grid';
+  renderNav(user);
+
+  await fetchWallet();
+});
+
+// ══════════════════════════════════
+//  FETCH WALLET DATA
+// ══════════════════════════════════
+async function fetchWallet() {
+  const token = localStorage.getItem('flu_token');
+
+  try {
+    // Fetch wallet balance from backend
+    const res  = await fetch('/api/wallet', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      walletData = {
+        balance:       data.walletBalance       || 0,
+        totalEarned:   data.totalEarned         || data.walletBalance || 0,
+        totalWithdrawn:data.totalWithdrawn      || 0,
+        totalKm:       data.totalKm             || 0,
+        totalRides:    data.totalRides          || 0,
+        transactions:  data.transactions        || []
+      };
+    } else {
+      // Backend wallet API not ready yet — build from bookings
+      await buildWalletFromBookings(token);
+    }
+  } catch(e) {
+    await buildWalletFromBookings(token);
+  }
+
+  renderWallet();
+}
+
+// Fallback: calculate wallet from booked rides
+async function buildWalletFromBookings(token) {
+  try {
+    const res  = await fetch('/api/rides/user/booked', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    const bookings = data.bookings || [];
+
+    let totalKm = 0, totalEarned = 0;
+    const txns = [];
+
+    bookings.forEach(b => {
+      const ride = b.rideId;
+      if (!ride || ride.rideStatus === 'cancelled') return;
+      const km       = ride.distanceKm || 0;
+      const cashback = +(km * 0.5).toFixed(2);
+      const seats    = b.seats || 1;
+      const earned   = +(cashback * seats).toFixed(2);
+
+      totalKm     += km * seats;
+      totalEarned += earned;
+
+      if (earned > 0) {
+        txns.push({
+          type:   'earn',
+          label:  `${ride.fromLocation} → ${ride.toLocation}`,
+          sub:    `${km} km × ₹0.5 × ${seats} seat${seats>1?'s':''}`,
+          amount: earned,
+          date:   ride.date || ride.createdAt
+        });
+      }
+    });
+
+    walletData = {
+      balance:        +totalEarned.toFixed(2),
+      totalEarned:    +totalEarned.toFixed(2),
+      totalWithdrawn: 0,
+      totalKm:        Math.round(totalKm),
+      totalRides:     bookings.length,
+      transactions:   txns.reverse()
+    };
+  } catch(e) {
+    console.warn('Could not build wallet from bookings:', e);
+  }
+}
+
+// ══════════════════════════════════
+//  RENDER WALLET UI
+// ══════════════════════════════════
+function renderWallet() {
+  const bal = walletData.balance;
+
+  // Balance counter animation
+  animateCounter('bc-balance', 0, bal, true);
+
+  // Total earned pill
+  document.getElementById('bc-total-earned').textContent = '₹' + walletData.totalEarned.toFixed(0) + ' total earned';
+
+  // Progress bar (capped at 100%)
+  const pct = Math.min((bal / 100) * 100, 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-pct').textContent  = Math.round(pct) + '%';
+
+  // Withdraw button
+  const wBtn = document.getElementById('withdraw-btn');
+  if (bal >= 100) {
+    wBtn.disabled    = false;
+    wBtn.textContent = 'Withdraw ₹' + bal.toFixed(0) + ' →';
+  } else {
+    wBtn.disabled    = true;
+    wBtn.textContent = '₹' + (100 - bal).toFixed(0) + ' more to unlock withdrawal';
+  }
+
+  // Stats
+  document.getElementById('stat-rides').textContent     = walletData.totalRides;
+  document.getElementById('stat-km').textContent        = walletData.totalKm + ' km';
+  document.getElementById('stat-withdrawn').textContent = '₹' + walletData.totalWithdrawn;
+
+  // Transactions
+  renderTransactions();
+}
+
+function animateCounter(id, from, to, isRupee = false) {
+  const el  = document.getElementById(id);
+  const dur = 1200;
+  const start = performance.now();
+  function step(now) {
+    const t   = Math.min((now - start) / dur, 1);
+    const ease= t < .5 ? 2*t*t : -1+(4-2*t)*t;
+    const val = from + (to - from) * ease;
+    el.textContent = isRupee ? '₹' + val.toFixed(2) : Math.round(val);
+    if (t < 1) requestAnimationFrame(step);
+    else el.textContent = isRupee ? '₹' + to.toFixed(2) : to;
+  }
+  requestAnimationFrame(step);
+}
+
+// ══════════════════════════════════
+//  TRANSACTIONS
+// ══════════════════════════════════
+function renderTransactions() {
+  const list = document.getElementById('tx-list');
+  const txns = walletData.transactions;
+
+  document.getElementById('tx-count').textContent = txns.length + ' transactions';
+
+  if (!txns.length) {
+    list.innerHTML = `
+      <div class="tx-empty">
+        <div class="tx-empty-ico">🎫</div>
+        <div class="tx-empty-txt">No transactions yet.<br>Book a ride to start earning!</div>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = txns.map((tx, i) => {
+    const ico   = tx.type === 'earn' ? '🎁' : tx.type === 'withdraw' ? '💸' : '⚠️';
+    const icoClass = tx.type === 'earn' ? 'earn' : tx.type === 'withdraw' ? 'withdraw' : 'fine';
+    const amtClass = tx.type === 'earn' ? 'plus' : tx.type === 'withdraw' ? 'gold' : 'minus';
+    const sign     = tx.type === 'earn' ? '+' : '-';
+    const dateStr  = tx.date
+      ? new Date(tx.date).toLocaleDateString('en-IN', { day:'numeric', month:'short' })
+      : '—';
+
+    return `
+      <div class="tx-item" style="animation-delay:${i * 60}ms">
+        <div class="tx-ico ${icoClass}">${ico}</div>
+        <div class="tx-info">
+          <div class="tx-name">${tx.label}</div>
+          <div class="tx-sub">${tx.sub || dateStr}</div>
+        </div>
+        <div class="tx-amt ${amtClass}">${sign}₹${Math.abs(tx.amount).toFixed(2)}</div>
+      </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════
+//  COIN BURST (fun feedback)
+// ══════════════════════════════════
+function spawnCoinBurst(x, y) {
+  for (let i = 0; i < 5; i++) {
+    const el = document.createElement('div');
+    el.className = 'coin-burst';
+    el.textContent = '🪙';
+    el.style.left   = (x + (Math.random()-0.5)*60) + 'px';
+    el.style.top    = y + 'px';
+    el.style.animationDelay = (i * 80) + 'ms';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1000);
+  }
+}
+
+// ══════════════════════════════════
+//  WITHDRAW MODAL
+// ══════════════════════════════════
+function openWithdraw() {
+  document.getElementById('m-avail-amt').textContent = '₹' + walletData.balance.toFixed(2);
+  document.getElementById('w-amount').value = '';
+  document.getElementById('w-acc').value    = '';
+  document.getElementById('w-ifsc').value   = '';
+  document.getElementById('w-err').style.display = 'none';
+  document.getElementById('withdraw-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  // Trigger coin burst on button position
+  const btn = document.getElementById('withdraw-btn');
+  const r   = btn.getBoundingClientRect();
+  spawnCoinBurst(r.left + r.width/2, r.top);
+}
+function closeWithdraw() {
+  document.getElementById('withdraw-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('withdraw-modal').addEventListener('click', e => {
+  if (e.target.id === 'withdraw-modal') closeWithdraw();
+});
+
+function validateWithdraw() {
+  const amt = +document.getElementById('w-amount').value;
+  const err = document.getElementById('w-err');
+  if (amt < 100) {
+    err.textContent = 'Minimum withdrawal amount is ₹100.';
+    err.style.display = 'block';
+  } else if (amt > walletData.balance) {
+    err.textContent = `Cannot withdraw more than your balance (₹${walletData.balance.toFixed(2)}).`;
+    err.style.display = 'block';
+  } else {
+    err.style.display = 'none';
+  }
+}
+
+async function confirmWithdraw() {
+  const amt  = +document.getElementById('w-amount').value;
+  const acc  = document.getElementById('w-acc').value.trim();
+  const ifsc = document.getElementById('w-ifsc').value.trim();
+  const err  = document.getElementById('w-err');
+  err.style.display = 'none';
+
+  if (!amt || amt < 100)              { err.textContent = 'Minimum ₹100 required.'; err.style.display='block'; return; }
+  if (amt > walletData.balance)       { err.textContent = 'Insufficient balance.';  err.style.display='block'; return; }
+  if (!acc || acc.length < 8)         { err.textContent = 'Enter valid account number.'; err.style.display='block'; return; }
+  if (!ifsc || ifsc.length !== 11)    { err.textContent = 'Enter valid 11-character IFSC code.'; err.style.display='block'; return; }
+
+  const btn = document.querySelector('#withdraw-modal .msub');
+  btn.textContent = 'Processing…'; btn.disabled = true;
+
+  // TODO: Call Razorpay Payout API here
+  // For now simulate
+  await new Promise(r => setTimeout(r, 1500));
+
+  try {
+    const token = localStorage.getItem('flu_token');
+    const res   = await fetch('/api/wallet/withdraw', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', Authorization:`Bearer ${token}` },
+      body: JSON.stringify({ amount: amt, accountNumber: acc, ifscCode: ifsc })
+    });
+    // Handle response (even if API not ready)
+    closeWithdraw();
+    alert(`✅ Withdrawal of ₹${amt} initiated!\n\nRazorpay will transfer to your account within 2-3 business days.\n\n(Full Razorpay Payout API integration pending)`);
+    walletData.balance       -= amt;
+    walletData.totalWithdrawn += amt;
+    walletData.transactions.unshift({
+      type: 'withdraw', label: 'Bank Withdrawal', sub: `A/C ending ${acc.slice(-4)}`, amount: amt, date: new Date()
+    });
+    renderWallet();
+  } catch(e) {
+    closeWithdraw();
+    alert(`✅ Withdrawal of ₹${amt} will be processed.\n\n(Razorpay Payout integration pending)`);
+  } finally {
+    btn.textContent = 'Withdraw via Razorpay →'; btn.disabled = false;
+  }
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeWithdraw(); });
+
+// ══════════════════════════════════
+//  SESSION
+// ══════════════════════════════════
+function getUser()  { const u=localStorage.getItem('flu_user'); return u?JSON.parse(u):null; }
+function logout()   { localStorage.removeItem('flu_token'); localStorage.removeItem('flu_user'); location.href='/'; }
+function renderNav(user) {
+  document.getElementById('nav-av').textContent    = user.name.charAt(0).toUpperCase();
+  document.getElementById('nav-uname').textContent = user.name.split(' ')[0];
+}
+</script>
+
+<%- include('./partials/footer') %>
