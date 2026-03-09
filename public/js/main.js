@@ -27,7 +27,8 @@ function getToken() { return localStorage.getItem('flu_token'); }
 
 function getUser() {
   const u = localStorage.getItem('flu_user');
-  return u ? JSON.parse(u) : null;
+  if (!u || u === 'undefined' || u === 'null') return null;
+  try { return JSON.parse(u); } catch { return null; }
 }
 
 function logout() {

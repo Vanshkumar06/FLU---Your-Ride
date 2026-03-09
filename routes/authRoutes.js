@@ -1,17 +1,32 @@
 const express = require('express');
 const router = express.Router();
-const { registerUser, loginUser, firebaseAuth } = require('../controllers/authController');
-const { firebaseSync } = require('../controllers/authController');
+const admin = require('../config/firebase');
+const { registerUser, loginUser, firebaseAuth, firebaseSync } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
-router.post('/firebase-sync', protect, firebaseSync);
 
-// Naya user register karne ka route
+// Firebase token sirf verify karo — user dhundho mat (pehli baar login ke liye)
+const verifyFirebaseToken = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ message: 'No token' });
+    const decoded = await admin.auth().verifyIdToken(token);
+    req.user = { id: decoded.uid, email: decoded.email };
+    next();
+  } catch {
+    res.status(401).json({ message: 'Invalid token' });
+  }
+};
+
+// Firebase sync — verifyFirebaseToken use karo, protect nahi
+router.post('/firebase-sync', verifyFirebaseToken, firebaseSync);
+
+// Register
 router.post('/register', registerUser);
 
-// Existing user login karne ka route
+// Login
 router.post('/login', loginUser);
 
-// Firebase se aane wale user ka route
+// Firebase auth
 router.post('/firebase', firebaseAuth);
 
 module.exports = router;

@@ -6,17 +6,17 @@ const {
     getRideById,
     getPublishedRides,
     getBookedRides,
-    cancelRide
+    cancelRide,
+    getDriverStatus
 } = require('../controllers/rideController');
 
 const { protect } = require('../middleware/auth');
 
 // ── Subscription check middleware ──
-// Runs after 'protect' so req.user is already set
 const checkPublishLimit = async (req, res, next) => {
     try {
         const User = require('../models/User');
-        const user = await User.findById(req.user._id);
+        const user = await User.findById(req.user.id);
 
         if (!user) {
             return res.status(401).json({ message: 'User not found' });
@@ -58,7 +58,7 @@ const checkPublishLimit = async (req, res, next) => {
             });
         }
 
-        // 'unlimited' plan — no limit, pass through
+        // 'unlimited' plan — no limit
         next();
 
     } catch (err) {
@@ -67,13 +67,12 @@ const checkPublishLimit = async (req, res, next) => {
     }
 };
 
-// ── Driver status endpoint (used by publish page frontend) ──
+// ── Driver status ──
 router.get('/driver/status', protect, async (req, res) => {
     try {
         const User = require('../models/User');
-        const user = await User.findById(req.user._id);
+        const user = await User.findById(req.user.id);
 
-        // Reset monthly count if new month
         const now       = new Date();
         const lastReset = user.lastMonthReset ? new Date(user.lastMonthReset) : null;
         if (!lastReset || lastReset.getMonth() !== now.getMonth() || lastReset.getFullYear() !== now.getFullYear()) {
@@ -86,10 +85,10 @@ router.get('/driver/status', protect, async (req, res) => {
         const limitMap = { basic: 5, standard: 15, unlimited: Infinity };
 
         res.json({
-            ridesThisMonth:          user.ridesThisMonth         || 0,
-            cancellationsThisMonth:  user.cancellationsThisMonth || 0,
-            subscription:            user.subscription           || null,
-            subscriptionRidesLimit:  user.subscription ? (limitMap[user.subscription] || 0) : 3
+            ridesThisMonth:         user.ridesThisMonth         || 0,
+            cancellationsThisMonth: user.cancellationsThisMonth || 0,
+            subscription:           user.subscription           || null,
+            subscriptionRidesLimit: user.subscription ? (limitMap[user.subscription] || 0) : 3
         });
     } catch (err) {
         console.error('driver/status error:', err);
@@ -98,13 +97,15 @@ router.get('/driver/status', protect, async (req, res) => {
 });
 
 // ── Public Routes ──
-router.get('/search',  searchRides);
-router.get('/:id',     getRideById);
+router.get('/search', searchRides);
 
 // ── Protected Routes ──
-router.post('/publish',        protect, checkPublishLimit, publishRide);
-router.get('/user/published',  protect, getPublishedRides);
-router.get('/user/booked',     protect, getBookedRides);
-router.put('/cancel/:id',      protect, cancelRide);
+router.post('/publish',       protect, checkPublishLimit, publishRide);
+router.get('/user/published', protect, getPublishedRides);
+router.get('/user/booked',    protect, getBookedRides);
+router.put('/cancel/:id',     protect, cancelRide);
+
+// ── ID route SABSE NEECHE (warna /driver/status, /search etc. match ho jaate) ──
+router.get('/:id', getRideById);
 
 module.exports = router;

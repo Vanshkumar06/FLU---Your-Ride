@@ -2172,22 +2172,35 @@
     }
 
     async function syncUserWithBackend(token, fbUser, extra = {}) {
-      const res = await fetch('/api/auth/firebase-sync', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          name: extra.name || fbUser.displayName || 'User',
-          email: fbUser.email,
-          phone: extra.phone || ''
-        })
-      });
-      const data = await res.json();
-      localStorage.setItem('flu_token', token);
-      localStorage.setItem('flu_user', JSON.stringify(data.user));
-      updateNavAuth(data.user);
+      try {
+        const res = await fetch('/api/auth/firebase-sync', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            name: extra.name || fbUser.displayName || 'User',
+            email: fbUser.email,
+            phone: extra.phone || ''
+          })
+        });
+
+        console.log('Sync status:', res.status);
+        const data = await res.json();
+        console.log('Sync response:', data);
+
+        if (!data.user) {
+          console.error('No user in response!', data);
+          return;
+        }
+
+        localStorage.setItem('flu_token', token);
+        localStorage.setItem('flu_user', JSON.stringify(data.user));
+        updateNavAuth(data.user);
+      } catch (err) {
+        console.error('Sync error:', err);
+      }
     }
 
     function firebaseErrMsg(code) {
@@ -2213,7 +2226,8 @@
 
     function getSessionUser() {
       const u = localStorage.getItem('flu_user');
-      return u ? JSON.parse(u) : null;
+      if (!u || u === 'undefined' || u === 'null') return null;
+      try { return JSON.parse(u); } catch { return null; }
     }
 
     function logout() {
@@ -2238,8 +2252,12 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      const user = getSessionUser();
-      if (user) updateNavAuth(user);
+      const u = localStorage.getItem('flu_user');
+      if (!u || u === 'undefined' || u === 'null') return;
+      try {
+        const user = JSON.parse(u);
+        if (user) updateNavAuth(user);
+      } catch (e) { }
     });
   </script>
 

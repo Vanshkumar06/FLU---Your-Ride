@@ -164,11 +164,31 @@ const cancelRide = async (req, res) => {
     }
 };
 
+
+const getDriverStatus = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('ridesThisMonth subscription cancellationsThisMonth subscriptionRidesLimit');
+    res.json({
+      ridesThisMonth: user?.ridesThisMonth || 0,
+      subscription: user?.subscription || null,
+      cancellationsThisMonth: user?.cancellationsThisMonth || 0,
+      subscriptionRidesLimit: user?.subscriptionRidesLimit || 0
+    });
+  } catch(e) {
+    res.status(500).json({ message: e.message });
+  }
+};
+
+// exports mein bhi add karo
+module.exports = { publishRide, getDriverStatus };
+
+
 module.exports = {
     publishRide,
     searchRides,
     getRideById,
     getPublishedRides,
     getBookedRides,
-    cancelRide
+    cancelRide,
+    getDriverStatus
 };
