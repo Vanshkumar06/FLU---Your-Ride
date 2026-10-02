@@ -45,11 +45,13 @@ FLU/
 - Text: Black `#000000`
 
   
-##Live Link-
-https://flu-backend.onrender.com/
 
 ## Pages
 1. Home Page
 2. Book Ride Page
 3. View Rides / History Page
 4. FLU Wallet Page
+
+##Live Link
+https://flu-backend.onrender.com/
+
